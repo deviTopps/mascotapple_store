@@ -1,0 +1,19 @@
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Local Python runtime, credentials, and store data
+.venv/
+__pycache__/
+*.py[cod]
+backend/.local-config.json
+backend/.admin-credentials.txt
+backend/db.sqlite3*
+backend/media/
+backend/staticfiles/

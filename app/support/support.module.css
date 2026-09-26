@@ -1,0 +1,12 @@
+.support { max-width: 720px; margin: 0 auto; padding: clamp(24px, 5vw, 64px) 0; }
+.intro { color: #63717b; font-size: 17px; line-height: 1.7; margin: -12px 0 32px; }
+.contacts { display: grid; gap: 16px; }
+.contact { display: flex; align-items: center; gap: 18px; padding: 24px; border: 1px solid #e6ecef; border-radius: 16px; background: #fff; }
+.contact:hover { background: #f8fafb; border-color: #b9dce9; }
+.icon { display: grid; place-items: center; flex-shrink: 0; width: 48px; height: 48px; border-radius: 14px; background: #edf8fc; color: #0076a5; }
+.copy { display: grid; gap: 8px; flex: 1; min-width: 0; }
+.copy strong { color: #20292d; font-size: 17px; font-weight: 600; }
+.copy > span { color: #0076a5; font-size: 16px; overflow-wrap: anywhere; }
+.contact > svg { flex-shrink: 0; color: #0076a5; }
+.note { color: #737373; font-size: 14px; line-height: 1.7; margin-top: 24px; }
+@media (max-width: 540px) { .contact { padding: 18px 14px; gap: 12px; } .copy > span { font-size: 14px; } .icon { width: 40px; height: 40px; } }

@@ -1,0 +1,86 @@
+.section { margin: 0 auto; max-width: 2048px; padding: 72px 32px 88px; background: #fff; }
+.heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 40px; padding-inline: 24px; }
+.heading h2 { font-size: clamp(32px, 3.5vw, 52px); font-weight: 500; line-height: 1.1; margin: 0; }
+.controls { display: flex; gap: 8px; }
+.sectionActions { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; }
+.controls button { width: 38px; height: 38px; border: 0; border-radius: 50%; background: #e7e7eb; color: #373739; display: inline-flex; align-items: center; justify-content: center; }
+.controls button:hover { background: #dcdce1; }
+.rail { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(280px, calc((100% - 96px) / 5)); gap: 24px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 0 0 24px; }
+.rail::-webkit-scrollbar { display: none; }
+.rail { scroll-behavior: smooth; scroll-padding-inline: 2px; }
+.card { min-width: 0; display: flex; flex-direction: column; scroll-snap-align: start; }
+.visual { display: block; position: relative; overflow: hidden; aspect-ratio: .94; border-radius: 28px; background: #e8e4df; }
+.image { object-fit: cover; transition: transform .35s ease; }
+.visual:hover .image { transform: scale(1.025); }
+.phone-pro { background: #fff; }
+.phone-pro .image { object-fit: contain; padding: 16px; }
+.macbook { background: #fff; }
+.macbook .image { object-fit: contain; padding: 22px 10px; }
+.ipad { background: #fff; }
+.ipad .image { object-fit: contain; object-position: center 35%; padding: 20px 12px 0; }
+.watch { background: #080808; }
+.airpods { background: #f5f5f7; }
+.details { display: flex; flex: 1; flex-direction: column; align-items: center; text-align: center; padding: 26px 10px 4px; }
+.tag { margin: 0 0 12px; color: #b64416; font-size: 12px; line-height: 18px; font-weight: 600; }
+.details h3 { display: flex; align-items: start; justify-content: center; min-height: 48px; margin: 0 0 12px; font-size: 20px; line-height: 1.2; font-weight: 600; letter-spacing: -.04em; }
+.details h3 a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.price { margin: 0 0 30px; color: #29292c; font-size: 16px; line-height: 1.5; font-weight: 600; }
+.actions { margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 22px; }
+.learnMore { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; border-radius: 24px; background: #0071e3; color: #fff; padding: 11px 20px; font-size: 14px; white-space: nowrap; }
+.learnMore:hover { background: #0077ed; }
+.buy { border: 0; background: transparent; color: #0066cc; display: inline-flex; align-items: center; gap: 3px; font-size: 14px; min-height: 44px; padding: 8px 0; }
+.buy:hover { text-decoration: underline; text-underline-offset: 4px; }
+.section a:focus-visible, .section button:focus-visible, .rail:focus-visible { outline: 2px solid #0071e3; outline-offset: 3px; }
+@media (max-width: 640px) {
+  .section { padding: 52px 20px 60px; }
+  .heading { padding: 0; align-items: start; margin-bottom: 28px; }
+  .heading h2 { font-size: 34px; }
+  .controls { flex-shrink: 0; gap: 4px; }
+  .controls button { width: 32px; height: 32px; }
+  .rail { grid-auto-columns: 84%; gap: 18px; }
+  .visual { border-radius: 24px; }
+  .details h3 { font-size: 20px; }
+}
+@media (prefers-reduced-motion: reduce) { .image { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .rail { scroll-behavior: auto; } }
+.accessoriesSection { border-top: 1px solid #edf0f2; }
+.subtitle { color: #737373; font-size: 14px; line-height: 1.6; margin: 14px 0 0; }
+@media (max-width: 640px) { .accessoriesSection .heading { flex-direction: column; gap: 18px; } }
+.compactShop { padding-top: 44px; padding-bottom: 48px; }
+.compactShop .heading { margin-bottom: 24px; }
+.compactShop .rail { grid-auto-columns: minmax(220px, calc((100% - 64px) / 5)); gap: 16px; padding-bottom: 16px; }
+.compactShop .visual { aspect-ratio: 1.15; border-radius: 18px; }
+.compactShop .details { padding: 14px 6px 0; }
+.compactShop .tag { font-size: 11px; line-height: 16px; margin-bottom: 6px; }
+.compactShop .details h3 { font-size: 18px; min-height: 43px; margin-bottom: 6px; }
+.compactShop .price { font-size: 14px; margin-bottom: 12px; }
+.compactShop .actions { gap: 14px; }
+.compactShop .learnMore { font-size: 12px; padding: 9px 15px; }
+.compactShop .buy { font-size: 12px; }
+@media (max-width: 640px) {
+  .compactShop { padding-top: 32px; padding-bottom: 36px; }
+  .compactShop .rail { grid-auto-columns: 74%; gap: 14px; }
+}
+
+/* Mobile cards: consistent image wells, readable details and generous tap targets. */
+@media (max-width: 640px) {
+  .rail, .compactShop .rail { grid-auto-columns: minmax(210px, 66%); gap: 12px; padding-bottom: 12px; }
+  .card { padding: 8px; border: 0; border-radius: 18px; background: #fff; box-shadow: none; }
+  .visual, .compactShop .visual { aspect-ratio: 1; border-radius: 12px; }
+  .image { object-fit: contain; padding: 10px; }
+  .phone-pro .image, .macbook .image, .ipad .image { padding: 10px; object-position: center; }
+  .details, .compactShop .details { align-items: stretch; text-align: left; padding: 12px 4px 4px; }
+  .tag, .compactShop .tag { color: #687780; font-size: 11px; line-height: 1.4; margin-bottom: 6px; }
+  .details h3, .compactShop .details h3 { justify-content: flex-start; min-height: 40px; font-size: 15px; line-height: 1.35; letter-spacing: -.02em; margin-bottom: 8px; overflow-wrap: anywhere; }
+  .price, .compactShop .price { font-size: 14px; line-height: 1.5; margin-bottom: 14px; }
+  .actions, .compactShop .actions { flex-wrap: wrap; gap: 6px; width: 100%; }
+  .learnMore, .compactShop .learnMore, .buy, .compactShop .buy { width: 100%; min-height: 44px; justify-content: center; border-radius: 10px; padding: 10px 8px; font-size: 13px; font-weight: 600; }
+  .learnMore, .buy, .compactShop .learnMore, .compactShop .buy { background: #008cc3; color: #fff; }
+  .actions:has(.buy) .learnMore { order: 1; background: transparent; color: #0076a5; }
+  .learnMore:hover, .buy:hover { background: #0076a5; color: #fff; }
+  .visual:hover .image { transform: none; }
+}
+
+.smallerImages .visual { background: transparent; }
+.smallerImages .visual .image { object-fit: contain; padding: 28px; }
+@media (max-width: 640px) { .smallerImages .visual .image { padding: 24px; } }

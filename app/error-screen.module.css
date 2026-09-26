@@ -1,0 +1,18 @@
+.page { box-sizing: border-box; min-height: 100dvh; background: #fff; color: #20292d; font-family: Figtree, Arial, sans-serif; padding: 28px 20px 48px; }
+.brand { display: block; width: fit-content; margin: 0 auto; color: #0076a5; text-decoration: none; font-size: 16px; font-weight: 600; }
+.content { max-width: 600px; margin: clamp(48px, 10vh, 100px) auto 0; text-align: center; }
+.icon { display: inline-grid; place-items: center; width: 80px; height: 80px; border-radius: 24px; background: #edf8fc; color: #0076a5; }
+.label { margin: 24px 0 12px; color: #677882; font-size: 11px; letter-spacing: .12em; font-weight: 600; }
+.content h1 { margin: 0; font-size: clamp(30px, 5vw, 44px); line-height: 1.15; letter-spacing: -.03em; }
+.message { margin: 20px auto 28px; max-width: 490px; font-size: 16px; line-height: 1.7; color: #63717b; }
+.actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.actions a, .actions button { display: inline-flex; justify-content: center; align-items: center; box-sizing: border-box; min-height: 48px; padding: 12px 24px; border-radius: 10px; font: inherit; font-size: 15px; font-weight: 600; text-decoration: none; cursor: pointer; }
+.primary, .actions button { background: #008cc3; color: white; border: 1px solid #008cc3; }
+.secondary { background: white; color: #37474f; border: 1px solid #dce5e9; }
+.primary:hover, .actions button:hover { background: #0076a5; }
+.secondary:hover { background: #f8fafb; }
+.page a:focus-visible, .page button:focus-visible { outline: 3px solid #008cc3; outline-offset: 4px; }
+.support { display: grid; gap: 10px; margin-top: 40px; font-size: 14px; }
+.support p { margin: 0 0 2px; color: #63717b; }
+.support a { color: #0076a5; overflow-wrap: anywhere; text-underline-offset: 3px; }
+.detail { color: #737373; font-size: 12px; margin-top: 24px; overflow-wrap: anywhere; }
