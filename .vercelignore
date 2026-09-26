@@ -1,0 +1,6 @@
+backend/
+deploy/
+.env*
+.venv/
+*.tsbuildinfo
+.DS_Store

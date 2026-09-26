@@ -1,4 +1,5 @@
 node_modules/
+.vercel/
 .next/
 out/
 dist/
@@ -17,3 +18,4 @@ backend/.admin-credentials.txt
 backend/db.sqlite3*
 backend/media/
 backend/staticfiles/
+deploy/backups/

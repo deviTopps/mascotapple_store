@@ -1,4 +1,6 @@
 import json
+from unittest.mock import patch
+from django.db import OperationalError
 from decimal import Decimal
 from django.test import TestCase, override_settings
 from django.contrib.auth import get_user_model
@@ -6,6 +8,14 @@ from .models import Category, Product, ProductOption, Order
 
 @override_settings(INTERNAL_API_TOKEN='test-service-token')
 class StoreTests(TestCase):
+    def test_health_checks_database_without_exposing_errors(self):
+        self.assertEqual(self.client.get('/api/health/').status_code, 200)
+        with patch('store.views.connection.cursor', side_effect=OperationalError('private database details')):
+            response = self.client.get('/api/health/')
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json(), {'status': 'unavailable'})
+        self.assertEqual(response.headers['Cache-Control'], 'no-store')
+
     def setUp(self):
         category = Category.objects.create(name='iPhone')
         self.product = Product.objects.create(name='Test Phone', slug='test-phone', category=category, price='99.00')

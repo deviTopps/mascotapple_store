@@ -3,7 +3,7 @@ import secrets
 from decimal import Decimal
 from functools import wraps
 from django.conf import settings
-from django.db import transaction
+from django.db import DatabaseError, connection, transaction
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.utils import timezone
@@ -12,7 +12,13 @@ from django.views.decorators.http import require_GET, require_POST
 from .models import Product, Order, OrderItem
 
 @require_GET
-def health(request): return JsonResponse({'status': 'ok'})
+def health(request):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT 1')
+    except DatabaseError:
+        return JsonResponse({'status': 'unavailable'}, status=503, headers={'Cache-Control': 'no-store'})
+    return JsonResponse({'status': 'ok'}, headers={'Cache-Control': 'no-store'})
 
 @require_GET
 def catalog(request):
