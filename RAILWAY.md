@@ -1,6 +1,14 @@
 # Railway backend
 
-Use a Railway project with a PostgreSQL service and one backend service from this GitHub repository. Configure the backend's **Root Directory** as `/backend` and its **Config File Path** as `/backend/railway.json`. The Dockerfile installs the production requirements; Railway runs migrations before deployment and initializes static files after the persistent volume is mounted.
+Use a Railway project with a PostgreSQL service and one backend service from this GitHub repository. Configure the backend's **Root Directory** as `/backend`. Railway detects the `Dockerfile`, which installs the production requirements. Set these service settings directly (the current Railway API rejects the deprecated `railway.json` configuration format):
+
+- Dockerfile path: `Dockerfile`.
+- Pre-deploy command: `python manage.py migrate --noinput --settings=config.railway`.
+- Start command: `python railway_start.py`.
+- Healthcheck path: `/api/health/`, timeout 120 seconds.
+- Restart policy: on failure, maximum 5 retries; one replica.
+
+Railway runs migrations before deployment and initializes static files after the persistent volume is mounted.
 
 Attach a volume at **`/data`** to the backend and generate a Railway public domain targeting port **8000**. Use one backend replica with this volume. The backend refuses to start without the volume so uploaded images are not accidentally stored on ephemeral disk.
 
