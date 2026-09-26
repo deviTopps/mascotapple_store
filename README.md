@@ -39,6 +39,8 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Store backend
 
+For the Railway backend, follow [RAILWAY.md](RAILWAY.md). Select `/backend` as the Railway service root and `/backend/railway.json` as its config file.
+
 For Vercel frontend and Hostinger VPS backend hosting, follow [DEPLOYMENT.md](DEPLOYMENT.md). Production uses the configuration in `deploy/` and `backend/config/production.py`.
 
 The store now uses Django admin for catalog and order management. See [backend setup](backend/README.md). Local admin runs at http://127.0.0.1:8000/admin/. Product changes appear after refreshing the storefront.
