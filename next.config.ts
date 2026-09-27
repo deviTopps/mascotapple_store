@@ -22,7 +22,14 @@ if (process.env.VERCEL) {
 }
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    localPatterns: [
+      { pathname: '/**', search: '' },
+      // Product versions change when an image is replaced. The media route
+      // validates the version before fetching it from the backend.
+      { pathname: '/api/store-media/**' },
+    ],
+  },
 };
 
 export default nextConfig;

@@ -15,6 +15,20 @@ const valid = {
 };
 const load = (env) => vm.runInNewContext(config, { process: { env }, exports: {}, URL });
 
+test('Next image loader accepts versioned product media and ordinary local assets', () => {
+  const exports = {};
+  vm.runInNewContext(config, { process: { env: valid }, exports, URL });
+  const { imageConfigDefault } = require('next/dist/shared/lib/image-config');
+  const { hasLocalMatch } = require('next/dist/shared/lib/match-local-pattern');
+  const loader = require('next/dist/shared/lib/image-loader').default;
+  const images = { ...imageConfigDefault, ...exports.default.images };
+  for (const src of ['/api/store-media/products/phone.webp?v=1790432831654000', '/main_logo.jpg', '/_next/static/media/hero.abc123.png']) {
+    assert.equal(hasLocalMatch(images.localPatterns, src), true);
+    assert.doesNotThrow(() => loader({ config: images, src, width: 640, quality: 75 }));
+  }
+  assert.equal(hasLocalMatch(images.localPatterns, '/unrelated/path?arbitrary=1'), false);
+});
+
 test('hosted builds reject missing backend configuration and insecure origins', () => {
   for (const key of ['DJANGO_API_URL', 'DJANGO_API_TOKEN', 'SITE_URL']) {
     assert.throws(() => load({ ...valid, [key]: '' }));
