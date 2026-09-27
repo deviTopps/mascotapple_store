@@ -30,8 +30,9 @@ def catalog(request):
 def internal(view):
     @wraps(view)
     def wrapped(request, *args, **kwargs):
-        token = request.headers.get('Authorization', '').removeprefix('Bearer ')
-        if not settings.INTERNAL_API_TOKEN or not secrets.compare_digest(token, settings.INTERNAL_API_TOKEN):
+        authorization = request.headers.get('Authorization', '')
+        token = authorization.removeprefix('Bearer ')
+        if not authorization.startswith('Bearer ') or not settings.INTERNAL_API_TOKEN or not secrets.compare_digest(token.encode(), settings.INTERNAL_API_TOKEN.encode()):
             return JsonResponse({'error': 'Unauthorized'}, status=401)
         return view(request, *args, **kwargs)
     return wrapped
@@ -79,8 +80,8 @@ def create_order(request):
             order.full_clean()
             OrderItem.objects.bulk_create([OrderItem(order=order, product=p, name=p.name, quantity=q, selections=s, unit_price=p.price) for p,q,s in items])
         return JsonResponse({'reference': order.reference}, status=201)
-    except (KeyError, TypeError, ValueError, ValidationError, Product.DoesNotExist) as error:
-        return JsonResponse({'error': str(error) or 'Invalid order'}, status=400)
+    except (KeyError, TypeError, ValueError, ValidationError, Product.DoesNotExist):
+        return JsonResponse({'error': 'Invalid order. Check the details and refresh your cart.'}, status=400)
 
 @csrf_exempt
 @require_POST

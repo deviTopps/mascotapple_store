@@ -15,6 +15,18 @@ const valid = {
 };
 const load = (env) => vm.runInNewContext(config, { process: { env }, exports: {}, URL });
 
+test('browser protections forbid framing, plugins and cross-origin form posts', async () => {
+  const exports = {};
+  vm.runInNewContext(config, { process: { env: valid }, exports, URL });
+  const headers = Object.fromEntries((await exports.default.headers())[0].headers.map(({ key, value }) => [key, value]));
+  assert.equal(headers['X-Frame-Options'], 'DENY');
+  assert.equal(headers['X-Content-Type-Options'], 'nosniff');
+  assert.match(headers['Content-Security-Policy'], /frame-ancestors 'none'/);
+  assert.match(headers['Content-Security-Policy'], /object-src 'none'/);
+  assert.match(headers['Content-Security-Policy'], /form-action 'self'/);
+  assert.equal(exports.default.poweredByHeader, false);
+});
+
 test('Next image loader accepts versioned product media and ordinary local assets', () => {
   const exports = {};
   vm.runInNewContext(config, { process: { env: valid }, exports, URL });

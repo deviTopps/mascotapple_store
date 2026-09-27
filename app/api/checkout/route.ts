@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { cookies } from "next/headers";
 import { validateOrder } from "../../lib/checkout";
 import { paystack, signSession } from "../../lib/paystack";
+import { readOrderBody, RequestBodyError } from "../../lib/request-body";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
@@ -12,15 +13,22 @@ export async function POST(request: Request) {
 
   let order;
   let requestId: string | undefined;
+  let input: Record<string, unknown>;
   try {
-    const body = await request.text();
-    if (body.length > 16000) throw new Error("Order is too large.");
-    const input = JSON.parse(body);
+    const body = await readOrderBody(request);
+    if (!body || typeof body !== 'object' || Array.isArray(body)) throw new RequestBodyError('Invalid order.', 400);
+    input = body as Record<string, unknown>;
+  } catch (error) {
+    return Response.json({ error: error instanceof RequestBodyError ? error.message : 'Invalid order.' }, { status: error instanceof RequestBodyError ? error.status : 400 });
+  }
+  const catalog = await getStoreProducts().catch(() => null);
+  if (!catalog) return Response.json({ error: 'Ordering is temporarily unavailable. Please try again later.' }, { status: 503 });
+  try {
     if (input.paymentMethod === "cod") {
       if (typeof input.requestId !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(input.requestId)) throw new Error("Invalid checkout request. Please refresh and try again.");
       requestId = input.requestId;
     }
-    order = validateOrder(input, await getStoreProducts());
+    order = validateOrder(input, catalog);
     if (input.expectedAmount !== order.amount) throw new Error("Prices changed. Refresh your cart before paying.");
   } catch (error) {
     return Response.json({ error: error instanceof SyntaxError ? "Invalid order." : error instanceof Error ? error.message : "Please check your order." }, { status: 400 });

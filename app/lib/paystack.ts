@@ -6,12 +6,13 @@ export function signSession(session: PaymentSession, secret: string) {
 }
 export function readSession(token: string, secret: string): PaymentSession | null {
   try {
+    if (token.length > 2048 || token.split('.').length !== 2) return null;
     const [payload, signature] = token.split(".");
     const expected = createHmac("sha256", secret).update(payload).digest();
     const actual = Buffer.from(signature, "base64url");
     if (actual.length !== expected.length || !timingSafeEqual(actual, expected)) return null;
     const session = JSON.parse(Buffer.from(payload, "base64url").toString());
-    if (session.expires < Date.now() || typeof session.reference !== "string" || !Number.isSafeInteger(session.amount) || session.amount <= 0) return null;
+    if (!Number.isSafeInteger(session.expires) || session.expires <= Date.now() || typeof session.reference !== "string" || !/^mascot-[\w-]{1,93}$/.test(session.reference) || !Number.isSafeInteger(session.amount) || session.amount <= 0) return null;
     return session;
   } catch { return null; }
 }

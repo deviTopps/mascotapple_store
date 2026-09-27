@@ -30,6 +30,28 @@ test('payment session validates the signature and expiry', () => {
   assert.equal(readSession(token, 'wrong-secret'), null);
   assert.equal(readSession(token + 'x', 'test-secret'), null);
   assert.equal(readSession(signSession({ ...session, expires: Date.now() - 1 }, 'test-secret'), 'test-secret'), null);
+  assert.equal(readSession(token + '.extra', 'test-secret'), null);
+  for (const expires of [undefined, null, 'tomorrow', Infinity]) {
+    assert.equal(readSession(signSession({ ...session, expires }, 'test-secret'), 'test-secret'), null);
+  }
+});
+
+const { readOrderBody } = require('../app/lib/request-body.ts');
+test('checkout bounds streamed bytes and accepts only valid JSON', async () => {
+  const request = (body, headers = {}) => new Request('https://store.example/checkout', {
+    method: 'POST', body, headers: { 'content-type': 'application/json', ...headers }, duplex: 'half',
+  });
+  assert.deepEqual(await readOrderBody(request('{"items":[]}')), { items: [] });
+  await assert.rejects(readOrderBody(request('{}', { 'content-type': 'text/plain' })), { status: 415 });
+  await assert.rejects(readOrderBody(request('invalid')), { status: 400 });
+  await assert.rejects(readOrderBody(request('{}', { 'content-length': '16001' })), { status: 413 });
+  let cancelled = false;
+  const stream = new ReadableStream({
+    pull(controller) { controller.enqueue(new TextEncoder().encode('é'.repeat(5000))); },
+    cancel() { cancelled = true; },
+  });
+  await assert.rejects(readOrderBody(request(stream)), { status: 413 });
+  assert.equal(cancelled, true);
 });
 
 const { cartLineKey, validSelections } = require('../app/lib/product-options.ts');

@@ -1,7 +1,23 @@
 from django import forms
+from pathlib import Path
 from .models import Product, ProductOption
 
 class ProductAdminForm(forms.ModelForm):
+    def clean_image(self):
+        image = self.cleaned_data.get('image')
+        if not image or not hasattr(image, 'content_type'):
+            return image
+        if image.size > 5 * 1024 * 1024:
+            raise forms.ValidationError('Upload an image smaller than 5 MB.')
+        extensions = {'.jpg': 'JPEG', '.jpeg': 'JPEG', '.png': 'PNG', '.webp': 'WEBP', '.gif': 'GIF', '.avif': 'AVIF'}
+        expected = extensions.get(Path(image.name).suffix.lower())
+        decoded = getattr(image, 'image', None)
+        if not expected or decoded is None or decoded.format != expected:
+            raise forms.ValidationError('Upload a valid JPG, PNG, WebP, GIF or AVIF image with its correct extension.')
+        if decoded.width * decoded.height > 20_000_000:
+            raise forms.ValidationError('Upload an image with at most 20 megapixels.')
+        return image
+
     product_color = forms.CharField(label='Product Color', required=False, widget=forms.Textarea(attrs={'rows': 3, 'cols': 45, 'placeholder': 'Black\nBlue\nSilver'}), help_text='Enter one color per line. Leave empty if color selection is not needed.')
     storage_size = forms.CharField(label='Storage Size', required=False, widget=forms.Textarea(attrs={'rows': 3, 'cols': 45, 'placeholder': '128 GB\n256 GB\n512 GB'}), help_text='Enter one storage size per line. Leave empty for products without storage options.')
     class Meta:

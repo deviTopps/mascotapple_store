@@ -22,6 +22,18 @@ if (process.env.VERCEL) {
 }
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
+  async headers() {
+    return [{ source: '/:path*', headers: [
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      { key: 'X-Frame-Options', value: 'DENY' },
+      { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+      { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+      // These restrictions work with Next's inline hydration and Google Places.
+      // A nonce-based script policy requires a separate rendering migration.
+      { key: 'Content-Security-Policy', value: "base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'" },
+    ] }];
+  },
   images: {
     localPatterns: [
       { pathname: '/**', search: '' },

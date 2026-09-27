@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import timedelta
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 LOCAL = json.loads((BASE_DIR / '.local-config.json').read_text()) if (BASE_DIR / '.local-config.json').exists() else {}
@@ -27,3 +28,20 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 X_FRAME_OPTIONS = 'DENY'
+
+# Database-backed counters survive worker restarts and work across replicas.
+INSTALLED_APPS += ['axes']
+AUTHENTICATION_BACKENDS = ['axes.backends.AxesStandaloneBackend', 'django.contrib.auth.backends.ModelBackend']
+MIDDLEWARE += ['axes.middleware.AxesMiddleware']
+AXES_LOCKOUT_PARAMETERS = ['username']
+# Do not trust arbitrary forwarded IP headers or group users by a proxy's IP.
+AXES_CLIENT_IP_CALLABLE = 'store.security.no_client_ip'
+AXES_FAILURE_LIMIT = 10
+AXES_COOLOFF_TIME = timedelta(minutes=15)
+AXES_RESET_ON_SUCCESS = True
+AXES_RESET_COOL_OFF_ON_FAILURE_DURING_LOCKOUT = False
+AXES_SENSITIVE_PARAMETERS = ['username', 'ip_address']
+AXES_ENABLE_ACCESS_FAILURE_LOG = False
+SESSION_COOKIE_AGE = 8 * 60 * 60
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+AUTH_PASSWORD_VALIDATORS[1]['OPTIONS'] = {'min_length': 12}

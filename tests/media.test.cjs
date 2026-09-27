@@ -5,7 +5,7 @@ const vm = require('node:vm');
 const ts = require('typescript');
 
 const source = ts.transpileModule(fs.readFileSync('app/api/store-media/[...path]/route.ts', 'utf8'), {
-  compilerOptions: { module: ts.ModuleKind.CommonJS },
+  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2017 },
 }).outputText;
 function handler(fetch) {
   const exports = {};
@@ -29,6 +29,7 @@ test('versioned images reuse caches and separate replacements by version', async
   }
   assert.notEqual(calls[0].url, calls[1].url);
   assert.equal(calls[0].options.next.revalidate, 86400);
+  assert.equal(calls[0].options.redirect, 'error');
 });
 
 test('unversioned images keep their short freshness window', async () => {
@@ -43,9 +44,19 @@ test('unversioned images keep their short freshness window', async () => {
 test('unsafe paths, malformed versions and non-images are not cached', async () => {
   const noFetch = handler(() => { throw new Error('Should not fetch'); });
   assert.equal((await noFetch(new Request('https://store.example.com/image?v=bad'), params)).status, 400);
+  assert.equal((await noFetch(new Request('https://store.example.com/image?v=123&v=124'), params)).status, 400);
+  assert.equal((await noFetch(new Request('https://store.example.com/image?unknown=value'), params)).status, 400);
   assert.equal((await noFetch(new Request('https://store.example.com/image'), { params: Promise.resolve({ path: ['..', 'secret'] }) })).status, 400);
   const get = handler(async () => new Response('<html>Error</html>', { headers: { 'Content-Type': 'text/html' } }));
   const response = await get(new Request('https://store.example.com/image?v=123'), params);
   assert.equal(response.status, 404);
   assert.equal(response.headers.get('CDN-Cache-Control'), null);
+});
+
+test('media upstream failures return an uncached error without internal details', async () => {
+  const get = handler(async () => { throw new Error('private upstream details'); });
+  const response = await get(new Request('https://store.example.com/image?v=123'), params);
+  assert.equal(response.status, 502);
+  assert.equal(response.headers.get('Cache-Control'), 'no-store');
+  assert.equal(await response.text(), '');
 });
