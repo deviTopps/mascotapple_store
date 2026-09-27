@@ -8,6 +8,18 @@ from .models import Category, Product, ProductOption, Order
 
 @override_settings(INTERNAL_API_TOKEN='test-service-token')
 class StoreTests(TestCase):
+    def test_updated_product_image_gets_a_new_cache_url(self):
+        from datetime import timedelta
+        from urllib.parse import urlsplit, parse_qs
+        self.product.image = 'products/phone.webp'
+        self.product.save()
+        first = self.client.get('/api/catalog/').json()['products'][0]['image']
+        Product.objects.filter(pk=self.product.pk).update(updated_at=self.product.updated_at + timedelta(seconds=1))
+        second = self.client.get('/api/catalog/').json()['products'][0]['image']
+        self.assertEqual(urlsplit(first).path, '/api/store-media/products/phone.webp')
+        self.assertEqual(urlsplit(first).path, urlsplit(second).path)
+        self.assertNotEqual(parse_qs(urlsplit(first).query)['v'], parse_qs(urlsplit(second).query)['v'])
+
     def test_health_checks_database_without_exposing_errors(self):
         self.assertEqual(self.client.get('/api/health/').status_code, 200)
         with patch('store.views.connection.cursor', side_effect=OperationalError('private database details')):

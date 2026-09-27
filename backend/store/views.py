@@ -24,7 +24,7 @@ def health(request):
 def catalog(request):
     result = []
     for p in Product.objects.filter(is_active=True).select_related('category').prefetch_related('options'):
-        result.append({'slug': p.slug, 'name': p.name, 'category': p.category.name, 'price': f'GH₵{p.price:,.2f}' if p.price is not None else 'Contact for price', 'priceValue': float(p.price) if p.price is not None else None, 'tag': p.tag, 'description': p.description, 'longDescription': p.long_description, 'image': f'/api/store-media/{p.image.name}' if p.image else p.image_path or '/main_logo.jpg', 'imageAlt': p.image_alt or p.name, 'highlights': [v.strip() for v in p.highlights.splitlines() if v.strip()], 'visual': p.visual, 'tone': p.tone, 'options': [{'id': o.key, 'label': o.label, 'values': o.value_list()} for o in p.options.all()]})
+        result.append({'slug': p.slug, 'name': p.name, 'category': p.category.name, 'price': f'GH₵{p.price:,.2f}' if p.price is not None else 'Contact for price', 'priceValue': float(p.price) if p.price is not None else None, 'tag': p.tag, 'description': p.description, 'longDescription': p.long_description, 'image': f'/api/store-media/{p.image.name}?v={int(p.updated_at.timestamp() * 1000000)}' if p.image else p.image_path or '/main_logo.jpg', 'imageAlt': p.image_alt or p.name, 'highlights': [v.strip() for v in p.highlights.splitlines() if v.strip()], 'visual': p.visual, 'tone': p.tone, 'options': [{'id': o.key, 'label': o.label, 'values': o.value_list()} for o in p.options.all()]})
     return JsonResponse({'products': result}, headers={'Cache-Control': 'no-store'})
 
 def internal(view):
