@@ -31,3 +31,17 @@ test('production accepts configured origins; previews can use their request orig
   assert.throws(() => load({ ...valid, VERCEL_ENV: 'preview', SITE_URL: 'https://example.com/checkout' }));
   assert.doesNotThrow(() => load({}));
 });
+
+test('malformed URL errors identify the variable without disclosing its value', () => {
+  for (const name of ['DJANGO_API_URL', 'SITE_URL']) {
+    for (const value of ['private-value-without-scheme', '`https://example.com`', `${name}=https://example.com`]) {
+      assert.throws(() => load({ ...valid, [name]: value }), (error) => {
+        assert.ok(error.message.startsWith(`${name} is not a valid URL.`));
+        assert.ok(!error.message.includes(value));
+        assert.equal(error.input, undefined);
+        assert.equal(error.cause, undefined);
+        return true;
+      });
+    }
+  }
+});
