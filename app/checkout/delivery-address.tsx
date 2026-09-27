@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MapPin } from "lucide-react";
+import { useCookiePreferences } from '../cookie-preferences';
 
 type Place = {
   id?: string;
@@ -25,6 +26,7 @@ function loadPlaces(key: string) {
       return;
     }
     const script = document.createElement("script");
+    script.dataset.mascotMaps = 'true';
     const timer = window.setTimeout(() => reject(new Error("Location search timed out.")), 15000);
     mapsWindow.mascotMapsReady = () => {
       window.clearTimeout(timer);
@@ -42,6 +44,8 @@ function loadPlaces(key: string) {
 
 type Location = { placeId: string; latitude: number; longitude: number };
 export default function DeliveryAddress() {
+  const { consent } = useCookiePreferences();
+  const allowMaps = consent?.maps === true;
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const host = useRef<HTMLDivElement>(null);
   const revision = useRef(0);
@@ -51,7 +55,7 @@ export default function DeliveryAddress() {
   const [status, setStatus] = useState(apiKey ? "Loading Google location search…" : "Enter your delivery address below.");
 
   useEffect(() => {
-    if (!apiKey) return;
+    if (!apiKey || !allowMaps) return;
     let active = true;
     let widget: HTMLElement | undefined;
     const selected = async (event: Event) => {
@@ -86,7 +90,7 @@ export default function DeliveryAddress() {
       setStatus("Search for your area, street, or a nearby landmark.");
     }).catch(failed);
     return () => { active = false; widget?.removeEventListener("gmp-select", selected); widget?.removeEventListener("gmp-error", failed); widget?.remove(); };
-  }, [apiKey]);
+  }, [apiKey, allowMaps]);
 
   function edited() {
     revision.current += 1;
@@ -94,8 +98,8 @@ export default function DeliveryAddress() {
     setStatus("Using your manually entered address.");
   }
   return <div className="delivery-address">
-    {apiKey && <div className="location-search"><h3><MapPin size={17} aria-hidden="true" /> Find your delivery location</h3><div ref={host} className="google-place-input" /></div>}
-    <p className="location-status" role="status">{status}</p>
+    {apiKey && allowMaps && <div className="location-search"><h3><MapPin size={17} aria-hidden="true" /> Find your delivery location</h3><div ref={host} className="google-place-input" /></div>}
+    <p className="location-status" role="status">{allowMaps ? status : 'Enter your delivery address below. You can enable Google address search in Cookie settings.'}</p>
     {location && <a className="location-map-link" href={`https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}&query_place_id=${encodeURIComponent(location.placeId)}`} target="_blank" rel="noopener noreferrer">View selected location in Google Maps ↗</a>}
     <input type="hidden" name="location" value={location ? JSON.stringify(location) : ""} />
     <label>Delivery address<textarea name="address" autoComplete="street-address" required minLength={8} maxLength={500} rows={3} value={address} onChange={event => { setAddress(event.target.value); edited(); }} /></label>

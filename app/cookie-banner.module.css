@@ -1,0 +1,22 @@
+.banner { position: fixed; z-index: 1000; inset: auto 0 0; width: 100%; margin: 0; padding: 14px clamp(20px, 3vw, 48px); background: #fff; color: #202124; border-top: 1px solid #dfe5e8; border-radius: 0; box-shadow: 0 -8px 32px #102b4420; max-height: 80dvh; overflow-y: auto; }
+.eyebrow { font-size: 10px; letter-spacing: .14em; font-weight: 700; color: #0076a5; margin: 0 0 4px; }
+.copy h2 { margin: 0 0 6px; font-size: 18px; line-height: 1.2; }
+.copy p:not(.eyebrow) { font-size: 13px; line-height: 1.45; margin: 0 0 4px; color: #56616a; }
+.copy a { color: #0076a5; text-decoration: underline; font-size: 13px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.actions button { flex: 1; min-height: 44px; padding: 10px 14px; border: 1px solid #0076a5; border-radius: 10px; background: #fff; color: #006b95; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.actions button:hover { background: #edf7fb; }
+.settings { position: fixed; z-index: 50; bottom: 12px; left: 12px; min-height: 44px; padding: 10px 14px; background: #fff; color: #46535b; border: 1px solid #dfe5e8; border-radius: 24px; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px #102b4410; }
+.preferences { display: grid; gap: 14px; padding-top: 16px; margin-top: 16px; border-top: 1px solid #e6eaec; font-size: 13px; }
+.preferences label { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; }
+.preferences input { width: 20px; height: 20px; flex-shrink: 0; accent-color: #0076a5; }
+.preferences strong, .preferences span span, .preferences > div > span { display: block; }
+.preferences span span, .preferences > div > span { margin-top: 4px; line-height: 1.5; color: #56616a; }
+.banner :focus-visible, .settings:focus-visible { outline: 2px solid #0076a5; outline-offset: 3px; }
+@media (min-width: 1000px) {
+  .banner { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px 28px; }
+  .actions { grid-column: 2; grid-row: 1; margin-top: 0; flex-wrap: nowrap; }
+  .actions button { flex: none; white-space: nowrap; }
+  .preferences { grid-column: 1 / -1; margin-top: 0; padding-top: 12px; }
+}
+@media (max-width: 480px) { .banner { padding: 12px 16px; } .actions { display: grid; grid-template-columns: 1fr 1fr; } .actions button:last-child { grid-column: 1 / -1; } }

@@ -5,6 +5,7 @@ import { CatalogProvider } from "./catalog-provider";
 import StoreUnavailable from "./store-unavailable";
 import { Suspense } from "react";
 import LoadingSkeleton from "./loading-skeleton";
+import CookieBanner from "./cookie-banner";
 
 export const metadata: Metadata = {
   title: "Mascot Apple Dealz | All your Apple Products at Affordable Prices.",
@@ -25,7 +26,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet" />
       </head>
-      <body><Suspense fallback={<LoadingSkeleton />}><StoreContent>{children}</StoreContent></Suspense></body>
+      <body><Suspense fallback={<LoadingSkeleton />}><StoreContent>{children}</StoreContent></Suspense><CookieBanner /></body>
     </html>
   );
 }

@@ -13,6 +13,8 @@ export default function SiteFooter() {
         </Link>
         <nav className={styles.links} aria-label="Footer navigation">
           <span>No Refunds</span>
+          <Link href="/cookies">Cookies</Link>
+          <Link href="/consumer-health-data-privacy">Consumer Health Data Privacy Disclosure</Link>
           <Link href="/support">Get support <ArrowUpRight size={15} aria-hidden="true" /></Link>
         </nav>
       </div>
