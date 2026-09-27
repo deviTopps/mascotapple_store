@@ -26,7 +26,7 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const productRail = useRef<HTMLDivElement>(null);
   const accessoriesRail = useRef<HTMLDivElement>(null);
-  const audioGamingRail = useRef<HTMLDivElement>(null);
+  const gamingLaptopsRail = useRef<HTMLDivElement>(null);
   function scrollProducts(direction: number, rail = productRail.current) {
     if (!rail) return;
     const card = rail.firstElementChild;
@@ -147,22 +147,22 @@ export default function Home() {
           ))}
         </div>
       </section>
-      <section className={`${cardStyles.section} ${cardStyles.accessoriesSection} ${cardStyles.compactShop}`} id="audio-gaming" aria-labelledby="audio-gaming-heading">
+      <section className={`${cardStyles.section} ${cardStyles.accessoriesSection} ${cardStyles.compactShop} ${cardStyles.compactGaming}`} id="gaming-laptops" aria-labelledby="gaming-laptops-heading">
         <div className={cardStyles.heading}>
-          <div><h2 id="audio-gaming-heading">Audio &amp; Gaming</h2><p className={cardStyles.subtitle}>Great sound. More ways to play.</p></div>
+          <div><h2 id="gaming-laptops-heading">Gaming &amp; Laptops</h2><p className={cardStyles.subtitle}>More ways to work and play.</p></div>
           <div className={cardStyles.sectionActions}>
-            <Link className="text-link" href="/products?category=Audio&category=Gaming">Shop audio & gaming <ArrowRight size={15} /></Link>
+            <Link className="text-link" href="/products?category=Gaming&category=Windows%20Laptops">Shop gaming &amp; laptops <ArrowRight size={15} /></Link>
             <div className={cardStyles.controls}>
-              <button type="button" aria-label="Previous audio and gaming" onClick={() => scrollProducts(-1, audioGamingRail.current)}><ChevronLeft size={20} /></button>
-              <button type="button" aria-label="Next audio and gaming" onClick={() => scrollProducts(1, audioGamingRail.current)}><ChevronRight size={20} /></button>
+              <button type="button" aria-label="Previous gaming and laptops" onClick={() => scrollProducts(-1, gamingLaptopsRail.current)}><ChevronLeft size={20} /></button>
+              <button type="button" aria-label="Next gaming and laptops" onClick={() => scrollProducts(1, gamingLaptopsRail.current)}><ChevronRight size={20} /></button>
             </div>
           </div>
         </div>
-        <div className={cardStyles.rail} ref={audioGamingRail} tabIndex={0} role="region" aria-label="Browse audio and gaming">
-          {products.filter(product => ["Audio", "Gaming"].includes(product.category)).map(product => (
+        <div className={cardStyles.rail} ref={gamingLaptopsRail} tabIndex={0} role="region" aria-label="Browse gaming and laptops">
+          {products.filter(product => ["Gaming", "Windows Laptops"].includes(product.category)).map(product => (
             <article className={cardStyles.card} key={product.slug}>
               <Link className={`${cardStyles.visual} ${cardStyles[product.visual]}`} href={`/products/${product.slug}`} aria-label={`View ${product.name}`}>
-                <Image className={cardStyles.image} src={product.image} alt={product.imageAlt} fill sizes="(max-width: 640px) 66vw, (max-width: 1550px) 300px, 20vw" />
+                <Image className={cardStyles.image} src={product.image} alt={product.imageAlt} fill sizes="(max-width: 640px) 60vw, (max-width: 1440px) 210px, (max-width: 2048px) 16vw, 320px" />
               </Link>
               <div className={cardStyles.details}>
                 <p className={cardStyles.tag}>{product.tag}</p>

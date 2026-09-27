@@ -84,3 +84,18 @@
 .smallerImages .visual { background: transparent; }
 .smallerImages .visual .image { object-fit: contain; padding: 28px; }
 @media (max-width: 640px) { .smallerImages .visual .image { padding: 24px; } }
+
+.compactGaming .rail { grid-auto-columns: minmax(210px, calc((100% - 70px) / 6)); gap: 14px; }
+.compactGaming .visual { aspect-ratio: 1.25; border-radius: 14px; background: transparent; }
+.compactGaming .visual .image { object-fit: contain; object-position: center; padding: 20px; }
+.compactGaming .details { padding-top: 8px; }
+.compactGaming .details h3 { font-size: 16px; min-height: 39px; line-height: 1.25; }
+.compactGaming .tag { margin-bottom: 4px; }
+.compactGaming .price { margin-bottom: 8px; }
+.compactGaming .actions { gap: 10px; }
+@media (max-width: 640px) {
+  .compactGaming .rail { grid-auto-columns: minmax(195px, 60%); gap: 10px; }
+  .compactGaming .visual .image { padding: 16px; }
+  .compactGaming .details h3 { font-size: 14px; min-height: 36px; }
+  .compactGaming .actions { gap: 4px; }
+}
