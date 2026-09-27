@@ -75,8 +75,8 @@ export default function Catalog() {
           <section className={styles.results} aria-label="Product results">
             <p className={styles.resultCount} role="status">{results.length} {results.length === 1 ? "product" : "products"}{activeFilters.length ? " found" : ""}</p>
             {activeFilters.length > 0 && <div className={styles.chips}>{activeFilters.map(([key, value]) => <button key={`${key}-${value}`} onClick={() => update(key, key === "category" || key === "tag" ? value : "", key === "category" || key === "tag")} aria-label={`Remove ${key} filter: ${value}`}>{key === "min" ? `From GH₵${value}` : key === "max" ? `Up to GH₵${value}` : key === "q" ? `Search: ${value}` : value}<X size={13} /></button>)}</div>}
-            {results.length ? <div className={styles.grid}>{results.map((product) => <article className={cards.card} key={product.slug}>
-              <Link className={`${cards.visual} ${cards[product.visual]}`} href={`/products/${product.slug}`} aria-label={`View ${product.name}`}><Image className={cards.image} src={product.image} alt={product.imageAlt} fill sizes="(max-width: 640px) 44vw, (max-width: 1100px) 42vw, 16vw" /></Link>
+            {results.length ? <div className={styles.grid}>{results.map((product) => <article className={`${cards.card} ${styles.productCard}`} key={product.slug}>
+              <Link className={`${cards.visual} ${styles.productVisual}`} href={`/products/${product.slug}`} aria-label={`View ${product.name}`}><Image className={`${cards.image} ${styles.productImage}`} src={product.image} alt={product.imageAlt} fill sizes="(max-width: 760px) 44vw, (max-width: 900px) 30vw, (max-width: 1100px) 22vw, 210px" /></Link>
               <div className={cards.details}>
                 <p className={cards.tag}>{product.tag}</p>
                 <h3><Link href={`/products/${product.slug}`}>{product.name}</Link></h3>
