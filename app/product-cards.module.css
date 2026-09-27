@@ -75,7 +75,7 @@
   .price, .compactShop .price { font-size: 14px; line-height: 1.5; margin-bottom: 14px; }
   .actions, .compactShop .actions { flex-wrap: wrap; gap: 6px; width: 100%; }
   .learnMore, .compactShop .learnMore, .buy, .compactShop .buy { width: 100%; min-height: 44px; justify-content: center; border-radius: 10px; padding: 10px 8px; font-size: 13px; font-weight: 600; }
-  .learnMore, .buy, .compactShop .learnMore, .compactShop .buy { background: #008cc3; color: #fff; }
+  .learnMore, .buy, .compactShop .learnMore, .compactShop .buy { background: #0076a5; color: #fff; }
   .actions:has(.buy) .learnMore { order: 1; background: transparent; color: #0076a5; }
   .learnMore:hover, .buy:hover { background: #0076a5; color: #fff; }
   .visual:hover .image { transform: none; }

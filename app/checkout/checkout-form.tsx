@@ -14,7 +14,7 @@ import { useCatalog } from "../catalog-provider";
 export default function CheckoutForm({ configured }: { configured: boolean }) {
   const products = useCatalog();
   const { items, ready } = useCart();
-  const [delivery, setDelivery] = useState("pickup");
+  const [requestedDelivery, setDelivery] = useState("pickup");
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [receipt, setReceipt] = useState<{ reference: string; amount: number; delivery: string } | null>(null);
   const attempt = useRef<{ payload: string; id: string } | null>(null);
@@ -23,6 +23,7 @@ export default function CheckoutForm({ configured }: { configured: boolean }) {
   const [error, setError] = useState("");
   const lines = items.map(item => ({ ...item, product: products.find(p => p.slug === item.slug)! }));
   const subtotal = lines.reduce((sum, line) => sum + (line.product.priceValue ?? 0) * line.quantity, 0);
+  const delivery = subtotal > 75 ? requestedDelivery : 'pickup';
   const needsQuote = lines.some(line => line.product.priceValue === null);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -33,7 +34,7 @@ export default function CheckoutForm({ configured }: { configured: boolean }) {
     const serialized = JSON.stringify(payload);
     if (!attempt.current || attempt.current.payload !== serialized) attempt.current = { payload: serialized, id: crypto.randomUUID() };
     try {
-      const response = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, requestId: attempt.current.id }) });
+      const response = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, requestId: attempt.current.id }), signal: AbortSignal.timeout(30000) });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Checkout could not start. Please try again.");
       if (result.paymentMethod === "cod") {
@@ -41,7 +42,7 @@ export default function CheckoutForm({ configured }: { configured: boolean }) {
         removePurchased(result.reference, result.items as CartItem[]);
         setBusy(false);
       } else window.location.assign(result.url);
-    } catch (err) { setError(err instanceof Error ? err.message : "Unable to connect. Please try again."); setBusy(false); inFlight.current = false; }
+    } catch (err) { setError(err instanceof DOMException && err.name === 'TimeoutError' ? 'Confirmation is taking longer than expected. Retry with this page open so your order is not duplicated.' : err instanceof SyntaxError ? 'The store is temporarily unavailable. Please retry with this page open.' : err instanceof Error ? err.message : "Unable to connect. Please try again."); setBusy(false); inFlight.current = false; }
   }
   if (receipt) return <section className="commerce-empty checkout-success" aria-live="polite"><SuccessIcon /><h2>Order placed successfully</h2><p>Thank you! Your order has been saved.</p><p>Reference: <strong>{displayOrderReference(receipt.reference)}</strong></p><p>Amount due {receipt.delivery === "pickup" ? "at pickup" : "on delivery"}: <strong>{money(receipt.amount / 100)}</strong></p><p className="commerce-note">No online payment was taken. Please pay when you receive your order.</p><Link className="commerce-button" href="/products">Continue shopping</Link></section>;
   if (!ready) return <LoadingSkeleton view="checkout" embedded />;

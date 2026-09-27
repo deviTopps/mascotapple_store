@@ -1,46 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mascot Apple Dealz storefront
 
-## Getting Started
+Next.js storefront with a Django catalog and order backend. Prices use GHS. The frontend is deployed on Vercel and the backend on Railway.
 
-First, run the development server:
+## Local development
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Use Node.js 24 and Python 3.10 or newer.
+
+```sh
+npm ci
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Follow [backend/README.md](backend/README.md) to install Python dependencies, initialize the local catalog and start Django. Local setup creates an ignored `.env.local` with the backend connection; never commit credentials, database files or uploaded customer data.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```sh
+npm run dev -- --port 3001
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open http://localhost:3001. Without `DJANGO_API_URL`, local development uses the bundled demo catalog; checkout requires a configured backend. A configured backend outage displays an availability message while support and privacy pages remain accessible.
 
-## Learn More
+## Validation
 
-To learn more about Next.js, take a look at the following resources:
+```sh
+npm run lint
+npm test
+npm run build
+backend/.venv/bin/python backend/manage.py test store --noinput
+npx playwright install chromium
+npm run test:browser
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Browser tests start an isolated demo storefront on port 3100. To test an already running local app with installed Chrome:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```sh
+E2E_BASE_URL=http://localhost:3001 E2E_CHANNEL=chrome npm run test:browser
+```
 
-## Deploy on Vercel
+The suite covers desktop/mobile layouts, serious accessibility violations, cookie preferences, catalog pagination, product configuration and cart updates. It stops before submitting an order. Use a local or staging environment; tests are not intended for a production store. The GitHub Actions workflow runs the build, browser checks, dependency audits, secret scanning and backend tests.
 
-Follow [VERCEL.md](VERCEL.md) for this storefront's import settings, required backend connection variables, domains, and launch checks. The repository includes `vercel.json`; deploy from the repository root.
+## Storefront behavior
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- The shop displays 24 products per page and preserves filter/sort state in its URL.
+- Product metadata, JSON-LD, `/sitemap.xml` and `/robots.txt` support search indexing. Set `SITE_URL` to the public frontend origin. Cart, checkout and Vercel preview pages request no indexing.
+- Figtree is self-hosted through `next/font/local`; its license is in `app/fonts/OFL.txt`.
+- Cart and cookie settings use browser storage with an in-memory fallback if writes fail. That fallback lasts only for the current visit.
+- Checkout validates orders server-side and limits payment metadata to purchased items. Paystack remains test-only; live payments, payment webhooks, inventory tracking and shipping integrations require further implementation.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment and operations
 
-## Store backend
+- [VERCEL.md](VERCEL.md): frontend settings and environment variables.
+- [RAILWAY.md](RAILWAY.md): backend deployment and persistent storage.
+- [DEPLOYMENT.md](DEPLOYMENT.md): alternative Hostinger VPS setup.
+- [backend/README.md](backend/README.md): catalog and order administration.
 
-For the Railway backend, follow [RAILWAY.md](RAILWAY.md). Select `/backend` as the Railway service root and apply the documented service settings.
-
-For Vercel frontend and Hostinger VPS backend hosting, follow [DEPLOYMENT.md](DEPLOYMENT.md). Production uses the configuration in `deploy/` and `backend/config/production.py`.
-
-The store now uses Django admin for catalog and order management. See [backend setup](backend/README.md). Local admin runs at http://127.0.0.1:8000/admin/. Product changes appear after refreshing the storefront.
+Back up the production database and media separately. Automated checks supplement manual testing and dependency maintenance; they do not guarantee accessibility or security in every scenario.

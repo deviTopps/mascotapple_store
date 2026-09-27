@@ -7,6 +7,7 @@ import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { getStoreProducts } from "../../lib/store-backend";
 import { CartLink } from "../../cart-store";
 import ProductActions from "./product-actions";
+import { productStructuredData, serializeJsonLd, storeUrl } from '../../lib/seo';
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
@@ -17,8 +18,10 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const product = (await getStoreProducts()).find(product => product.slug === slug);
 
   return product
-    ? { title: `${product.name} | Morrow`, description: product.longDescription }
-    : { title: "Product not found | Morrow" };
+    ? { title: `${product.name} | Mascot Apple Dealz`, description: product.longDescription || product.description,
+        alternates: { canonical: storeUrl(`/products/${product.slug}`) },
+        openGraph: { title: product.name, description: product.description, url: storeUrl(`/products/${product.slug}`), images: [{ url: storeUrl(product.image), alt: product.imageAlt }] } }
+    : { title: "Product not found | Mascot Apple Dealz", robots: { index: false, follow: false } };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
@@ -29,9 +32,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <main className="product-page">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(productStructuredData(product)) }} />
       <header className="site-header product-page-header">
         <Link className="logo-link" href="/" aria-label="Mascot home">
-          <Image className="logo-image" src="/main_logo.jpg" alt="Mascot Apple dealz Gh logo" width={104} height={104} priority />
+          <Image className="logo-image" src="/main_logo.jpg" alt="Mascot Apple dealz Gh logo" width={104} height={104} loading="eager" />
         </Link>
         <div className="product-header-actions"><Link className="product-page-back-link" href="/products"><ArrowLeft size={16} /> All products</Link><CartLink /></div>
       </header>
@@ -44,7 +48,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <section className="product-detail">
           <div className="product-detail-visual">
             <Image className="product-detail-image" src={product.image} alt={product.imageAlt} fill sizes="(max-width: 760px) 90vw, (max-width: 1280px) 50vw, 620px" preload />
-            <span className="product-detail-tag">{product.tag}</span>
+            {product.tag && <span className="product-detail-tag">{product.tag}</span>}
           </div>
 
           <div className="product-detail-copy">
@@ -54,12 +58,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <p className="product-detail-description">{product.longDescription}</p>
             <ProductActions productName={product.name} slug={product.slug} />
 
-            <div className="product-highlights">
+            {product.highlights.length > 0 && <div className="product-highlights">
               <h2>Highlights</h2>
               <ul>
                 {product.highlights.map((highlight) => <li key={highlight}><Check size={16} aria-hidden="true" />{highlight}</li>)}
               </ul>
-            </div>
+            </div>}
             <Link className="product-support-link" href="/support">Need a hand? Talk to us <ArrowRight size={14} /></Link>
           </div>
         </section>

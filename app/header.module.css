@@ -5,7 +5,7 @@
   gap: 10px;
   min-height: 34px;
   padding: 8px 16px;
-  background: #008CC3;
+  background: #0076a5;
   color: #f4f6f2;
   font-size: 12px;
   line-height: 18px;
@@ -19,20 +19,20 @@
 .brand img { display: block; width: 120px; height: 120px; object-fit: contain; }
 .navigation { display: flex; align-items: center; gap: clamp(16px, 1.7vw, 26px); }
 .navigation a { position: relative; padding: 14px 0; white-space: nowrap; font-size: 16px; color: #686d67; transition: color .2s; }
-.navigation a:hover, .navigation a.active { color: #008CC3; }
+.navigation a:hover, .navigation a.active { color: #0076a5; }
 .navigation a.active { font-weight: 600; }
-.navigation a.active::after { content: ''; position: absolute; bottom: 5px; left: 0; right: 0; height: 2px; border-radius: 2px; background: #008CC3; }
+.navigation a.active::after { content: ''; position: absolute; bottom: 5px; left: 0; right: 0; height: 2px; border-radius: 2px; background: #0076a5; }
 .actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-.iconButton, .menuButton { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border: 0; border-radius: 50%; background: transparent; color: #008CC3; }
+.iconButton, .menuButton { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border: 0; border-radius: 50%; background: transparent; color: #0076a5; }
 .iconButton:hover, .menuButton:hover { background: #f0f3ee; }
-.bag { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 42px; padding: 0 15px; border: 1px solid #e2e7df; border-radius: 24px; background: #f6f8f3; color: #008CC3; font-size: 14px; }
+.bag { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 42px; padding: 0 15px; border: 1px solid #e2e7df; border-radius: 24px; background: #f6f8f3; color: #0076a5; font-size: 14px; }
 .bag:hover { background: #e9eee5; }
-.count { display: inline-flex; align-items: center; justify-content: center; background: #008CC3; color: #fff; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 50%; font-size: 11px; }
+.count { display: inline-flex; align-items: center; justify-content: center; background: #0076a5; color: #fff; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 50%; font-size: 11px; }
 .menuButton { display: none; }
-.header a:focus-visible, .header button:focus-visible, .search input:focus-visible { outline: 2px solid #008CC3; outline-offset: 4px; border-radius: 4px; }
+.header a:focus-visible, .header button:focus-visible, .search input:focus-visible { outline: 2px solid #0076a5; outline-offset: 4px; border-radius: 4px; }
 .search { display: flex; align-items: center; gap: 16px; max-width: 1312px; margin: 0 auto; padding: 20px clamp(24px, 4vw, 64px); border-top: 1px solid #edf0ea; color: #697263; }
-.search input { flex: 1; min-width: 0; padding: 10px 0; border: 0; background: transparent; color: #008CC3; font-size: 16px; }
-.search button { display: inline-flex; align-items: center; gap: 8px; border: 0; padding: 10px 0; background: transparent; color: #008CC3; font-size: 15px; }
+.search input { flex: 1; min-width: 0; padding: 10px 0; border: 0; background: transparent; color: #0076a5; font-size: 16px; }
+.search button { display: inline-flex; align-items: center; gap: 8px; border: 0; padding: 10px 0; background: transparent; color: #0076a5; font-size: 15px; }
 
 @media (max-width: 1100px) {
   .inner { gap: 20px; }

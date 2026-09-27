@@ -17,7 +17,7 @@ export default function CookieInformation() {
     <h2>Changing your choice</h2>
     <p>Select Cookie settings, adjust the optional service and save. Rejecting optional services does not prevent shopping. If Google has already loaded, withdrawing permission reloads the page to stop it; unsaved checkout fields may be lost. This cannot undo data already sent to Google. You can remove previously stored site data through your browser settings.</p>
     <h2>Other connections</h2>
-    <p>The store loads typefaces from Google Fonts. If you choose online payment when available, you are redirected to Paystack, which provides its own privacy and cookie information. This store does not currently include advertising or analytics trackers.</p>
+    <p>The store serves its typefaces directly, without contacting Google Fonts from your browser. If you choose online payment when available, you are redirected to Paystack, which provides its own privacy and cookie information. This store does not currently include advertising or analytics trackers.</p>
     <p>Questions? <Link href="/support">Contact the store.</Link></p>
   </main>;
 }

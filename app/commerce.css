@@ -24,7 +24,7 @@
 .summary-row strong { white-space: nowrap; font-weight: 500; }
 .summary-row small { color: #737373; }
 .summary-total { margin: 14px 0; padding-top: 20px; border-top: 1px solid #dde4e8; font-size: 18px; }
-.commerce-button { display: flex; justify-content: center; align-items: center; gap: 8px; min-height: 48px; padding: 12px 20px; background: #008cc3; color: white; border: 0; border-radius: 10px; font-size: 14px; font-weight: 600; width: 100%; }
+.commerce-button { display: flex; justify-content: center; align-items: center; gap: 8px; min-height: 48px; padding: 12px 20px; background: #0076a5; color: white; border: 0; border-radius: 10px; font-size: 14px; font-weight: 600; width: 100%; }
 .commerce-button:hover { background: #0076a5; }
 .commerce-page button:disabled { opacity: .5; cursor: not-allowed; }
 .commerce-secondary { display: block; text-align: center; color: #0076a5; margin-top: 18px; font-size: 13px; }
@@ -42,7 +42,7 @@
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .secure-note { display: flex; justify-content: center; align-items: center; gap: 6px; color: #737373; font-size: 11px; margin-top: 14px; }
 .commerce-error { color: #a32929; font-size: 13px; line-height: 1.6; }
-.commerce-page :is(a, button, input, textarea, select):focus-visible { outline: 2px solid #008cc3; outline-offset: 3px; }
+.commerce-page :is(a, button, input, textarea, select):focus-visible { outline: 2px solid #0076a5; outline-offset: 3px; }
 @media (max-width: 800px) { .commerce-grid { grid-template-columns: 1fr; gap: 28px; } }
 @media (max-width: 540px) { .commerce-header { gap: 14px; font-size: 12px; } .commerce-main { padding-top: 32px; } .cart-line { gap: 12px; flex-wrap: wrap; } .cart-image img { width: 80px; height: 80px; } .cart-line-end { width: 100%; display: flex; justify-content: space-between; align-items: center; } .field-row { grid-template-columns: 1fr; gap: 0; } }
 .order-variant { display: block; margin-top: 4px; font-size: 11px; }
@@ -74,17 +74,17 @@
 .checkout-notes { margin-top: 12px; }
 .checkout-notes summary { cursor: pointer; font-size: 12px; color: #0076a5; padding: 10px 0; }
 .checkout-notes summary span { color: #737373; }
-.checkout-notes summary:focus-visible { outline: 2px solid #008cc3; outline-offset: 3px; }
+.checkout-notes summary:focus-visible { outline: 2px solid #0076a5; outline-offset: 3px; }
 .checkout-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 @media (max-width: 800px) { .checkout-compact .commerce-grid { grid-template-columns: 1fr; gap: 22px; } }
 @media (max-width: 540px) { .checkout-compact .commerce-main { padding-top: 20px; } .checkout-compact .commerce-main h1 { font-size: 28px; margin-bottom: 18px; } .checkout-compact .field-row { gap: 0; } }
 .payment-methods { padding: 16px 0 0; margin: 18px 0 0; border: 0; border-top: 1px solid #eee; }
 .payment-methods legend { padding: 0 6px 0 0; font-size: 14px; font-weight: 600; }
 .checkout-compact .payment-methods label { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border: 1px solid #dce2e6; border-radius: 9px; cursor: pointer; }
-.checkout-compact .payment-methods label:has(input:checked) { border-color: #008cc3; background: #f1faff; }
-.checkout-compact .payment-methods input { width: 16px; min-height: 16px; height: 16px; margin-top: 2px; padding: 0; flex-shrink: 0; accent-color: #008cc3; }
+.checkout-compact .payment-methods label:has(input:checked) { border-color: #0076a5; background: #f1faff; }
+.checkout-compact .payment-methods input { width: 16px; min-height: 16px; height: 16px; margin-top: 2px; padding: 0; flex-shrink: 0; accent-color: #0076a5; }
 .payment-methods strong { display: block; font-weight: 500; color: #262626; }
-.payment-methods small { display: block; margin-top: 5px; color: #737373; font-size: 11px; line-height: 1.5; }
+.payment-methods small { display: block; margin-top: 5px; color: #58616a; font-size: 11px; line-height: 1.5; }
 
 .commerce-main .checkout-success { max-width: 720px; margin: 0 auto; padding: clamp(32px, 6vw, 64px) 16px; gap: 18px; }
 .commerce-page .commerce-main .checkout-success :is(h1, h2) { font-size: clamp(30px, 4vw, 44px); line-height: 1.15; letter-spacing: -0.03em; margin: 0; color: #172d38; }

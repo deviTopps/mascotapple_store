@@ -5,18 +5,11 @@ import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 import { cartLineKey, validSelections, type Selections } from "./lib/product-options";
 import { useCatalog } from "./catalog-provider";
+import { createBrowserStore } from './lib/browser-store';
 
 export type CartItem = { slug: string; quantity: number; selections?: Selections };
-const key = "mascot-cart-v1";
-let fallback = "[]";
-function snapshot() {
-  try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; }
-}
-function subscribe(callback: () => void) {
-  window.addEventListener("storage", callback);
-  window.addEventListener("mascot-cart", callback);
-  return () => { window.removeEventListener("storage", callback); window.removeEventListener("mascot-cart", callback); };
-}
+const cartStore = createBrowserStore('mascot-cart-v1', 'mascot-cart', '[]');
+const { snapshot, subscribe } = cartStore;
 function parse(raw: string): CartItem[] {
   try {
     const data: unknown = JSON.parse(raw);
@@ -31,9 +24,7 @@ function parse(raw: string): CartItem[] {
   } catch { return []; }
 }
 function save(items: CartItem[]) {
-  fallback = JSON.stringify(items);
-  try { localStorage.setItem(key, fallback); } catch { /* Cart still works for this session. */ }
-  window.dispatchEvent(new Event("mascot-cart"));
+  cartStore.save(JSON.stringify(items));
 }
 // Remove only the purchased quantities, once per verified reference.
 const completed = new Set<string>();
@@ -63,6 +54,7 @@ export function useCart() {
       const incoming = { slug, selections, quantity: 1 };
       const id = cartLineKey(incoming);
       const existing = current.find(item => cartLineKey(item) === id);
+      if (!existing && current.length >= 100) return false;
       if (existing && existing.quantity >= 99) return false;
       save(existing ? current.map(item => cartLineKey(item) === id ? { ...item, quantity: item.quantity + 1 } : item) : [...current, incoming]);
       return true;

@@ -4,7 +4,7 @@
 .page h1 { max-width: 780px; margin: 16px 0; font-size: clamp(30px, 4.5vw, 48px); line-height: 1.15; font-weight: 600; letter-spacing: -.035em; overflow-wrap: anywhere; }
 .updated { font-size: 13px; color: #697780; }
 .intro { font-size: 17px; color: #53636c; }
-.summary { margin: 28px 0; padding: 22px 24px; background: #f0f8fb; border-left: 3px solid #008cc3; border-radius: 0 14px 14px 0; }
+.summary { margin: 28px 0; padding: 22px 24px; background: #f0f8fb; border-left: 3px solid #0076a5; border-radius: 0 14px 14px 0; }
 .summary p { margin: 8px 0 0; }
 .page section { margin-top: 30px; }
 .page h2 { font-size: 21px; line-height: 1.35; margin: 0 0 12px; letter-spacing: -.02em; }

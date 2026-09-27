@@ -51,7 +51,8 @@ export async function POST(request: Request) {
     const result = await paystack("/transaction/initialize", secret, {
       email: order.email, amount: order.amount, currency: "GHS", reference,
       callback_url: `${origin}/checkout/complete`,
-      metadata: { source: "mascot-store", order },
+      // Payment reconciliation needs purchased items, not addresses or notes.
+      metadata: { source: "mascot-store", order: { items: order.items } },
     });
     const url = new URL(result.authorization_url);
     if (url.protocol !== "https:" || url.hostname !== "checkout.paystack.com") throw new Error("Unexpected payment URL.");

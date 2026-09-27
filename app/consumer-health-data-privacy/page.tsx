@@ -54,7 +54,7 @@ export default function ConsumerHealthPrivacy() {
           <li><strong>Website and storage providers:</strong> Vercel and Railway process storefront requests and stored order information.</li>
           <li><strong>Communication providers:</strong> Google’s email service processes messages sent to our published Gmail address.</li>
           <li><strong>Address-search providers:</strong> if you enable Google address search, Google receives the searches you enter and connection information. A selected address and location may be saved with your order.</li>
-          <li><strong>Payment providers:</strong> when online payment is available and selected, Paystack receives transaction information and order metadata, which can include order notes and delivery information. Avoid placing health details in those fields.</li>
+          <li><strong>Payment providers:</strong> when online payment is available and selected, Paystack receives transaction information and purchased item details. Current checkout does not send order notes or delivery addresses as payment metadata.</li>
         </ul>
         <p>Our storefront does not sell consumer health data or transmit it to advertising networks. Requests from public authorities, where applicable, are subject to the relevant legal requirements.</p>
       </section>

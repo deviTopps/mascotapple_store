@@ -22,6 +22,7 @@ if (process.env.VERCEL) {
 }
 
 const nextConfig: NextConfig = {
+  devIndicators: { position: 'top-right' },
   poweredByHeader: false,
   async headers() {
     return [{ source: '/:path*', headers: [

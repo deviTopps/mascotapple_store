@@ -7,11 +7,11 @@
 .message { margin: 20px auto 28px; max-width: 490px; font-size: 16px; line-height: 1.7; color: #63717b; }
 .actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
 .actions a, .actions button { display: inline-flex; justify-content: center; align-items: center; box-sizing: border-box; min-height: 48px; padding: 12px 24px; border-radius: 10px; font: inherit; font-size: 15px; font-weight: 600; text-decoration: none; cursor: pointer; }
-.primary, .actions button { background: #008cc3; color: white; border: 1px solid #008cc3; }
+.primary, .actions button { background: #0076a5; color: white; border: 1px solid #0076a5; }
 .secondary { background: white; color: #37474f; border: 1px solid #dce5e9; }
 .primary:hover, .actions button:hover { background: #0076a5; }
 .secondary:hover { background: #f8fafb; }
-.page a:focus-visible, .page button:focus-visible { outline: 3px solid #008cc3; outline-offset: 4px; }
+.page a:focus-visible, .page button:focus-visible { outline: 3px solid #0076a5; outline-offset: 4px; }
 .support { display: grid; gap: 10px; margin-top: 40px; font-size: 14px; }
 .support p { margin: 0 0 2px; color: #63717b; }
 .support a { color: #0076a5; overflow-wrap: anywhere; text-underline-offset: 3px; }
