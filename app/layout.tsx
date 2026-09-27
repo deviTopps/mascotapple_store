@@ -7,8 +7,8 @@ import { Suspense } from "react";
 import LoadingSkeleton from "./loading-skeleton";
 
 export const metadata: Metadata = {
-  title: "Morrow | Thoughtfully chosen technology",
-  description: "The latest Apple devices, thoughtfully chosen for how you live, create, and connect.",
+  title: "Mascot Apple Dealz | All your Apple Products at Affordable Prices.",
+  description: "All latest Apple devices and Accessories  ",
 };
 
 async function StoreContent({ children }: Readonly<{ children: React.ReactNode }>) {
