@@ -1,0 +1,4 @@
+.map { overflow: hidden; border: 1px solid #dce5e9; border-radius: 16px; background: #f5f8fa; }
+.map iframe { display: block; width: 100%; height: 380px; border: 0; }
+.link { margin-top: 14px; }
+@media (max-width: 640px) { .map iframe { height: 320px; } }

@@ -13,6 +13,8 @@ export default function CookieInformation() {
     <p>Your cookie choice is stored locally for 180 days. We ask again when that choice expires. If browser storage is blocked, we remember your choice only for the current visit.</p>
     <h2>Optional Google address search</h2>
     <p>When enabled and available, checkout loads Google’s address-search service. Google receives connection information such as your IP address and the searches you enter, and may use its own storage. The selected delivery address is included with your order. You can always enter an address manually.</p>
+    <h2>Store location map</h2>
+    <p>The About Us page loads an embedded Google Maps store location automatically when you visit it. Google receives connection information, including your IP address, and may use its own cookies or storage. This map is separate from the optional address-search setting and is not disabled by rejecting optional services here. You can also open the location directly on Google Maps using the separate link.</p>
     <p>Read <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google’s privacy information</a> for its handling of this data.</p>
     <h2>Changing your choice</h2>
     <p>Select Cookie settings, adjust the optional service and save. Rejecting optional services does not prevent shopping. If Google has already loaded, withdrawing permission reloads the page to stop it; unsaved checkout fields may be lost. This cannot undo data already sent to Google. You can remove previously stored site data through your browser settings.</p>

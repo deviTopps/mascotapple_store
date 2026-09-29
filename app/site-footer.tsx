@@ -12,7 +12,9 @@ export default function SiteFooter() {
           <span><strong>Mascot Apple Dealz GH</strong><span>Your next favorite. Find it here.</span></span>
         </Link>
         <nav className={styles.links} aria-label="Footer navigation">
-          <span>No Refunds</span>
+          <Link href="/about">About us</Link>
+          <Link href="/refund-cancellation-policy">Refunds &amp; cancellations</Link>
+          <Link href="/terms-of-service">Terms of service</Link>
           <Link href="/cookies">Cookies</Link>
           <Link href="/consumer-health-data-privacy">Consumer Health Data Privacy Disclosure</Link>
           <Link href="/support">Get support <ArrowUpRight size={15} aria-hidden="true" /></Link>

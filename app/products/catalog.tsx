@@ -67,7 +67,7 @@ export default function Catalog() {
       <div className={header.spacer} aria-hidden="true" />
       <div className={styles.content}>
         <nav className={styles.breadcrumb} aria-label="Breadcrumb"><Link href="/">Home</Link><ChevronRight size={13} /><span aria-current="page">Shop</span></nav>
-        <div className={styles.intro}><div><h1>Find your next favorite.</h1><p>Apple devices, gaming, laptops and everyday accessories.</p></div><span className={styles.collectionCount}>{products.length} products in the collection</span></div>
+        <div className={styles.intro}><div><h1>Premium Tech<br />Get Value for Money</h1><p>Shop the latest Apple products, laptops, gaming, TVs, audios and everyday devices and accessories</p></div><span className={styles.collectionCount}>{products.length} products in the collection</span></div>
         <div className={styles.toolbar}>
           <label className={styles.search}><Search size={20} aria-hidden="true" /><input type="search" aria-label="Search all products" placeholder="Search products" value={params.get("q") ?? ""} onChange={(event) => update("q", event.target.value, false, true)} /></label>
           <button className={styles.filterToggle} onClick={() => setFiltersOpen((open) => !open)} aria-expanded={filtersOpen} aria-controls="catalog-filters"><SlidersHorizontal size={17} /> Filters {activeFilters.length > 0 && <span>{activeFilters.length}</span>}</button>

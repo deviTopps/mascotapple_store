@@ -3,16 +3,22 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
-import collectionImage from "../public/hero-apple-devices-transparent.png";
-import iphonesImage from "../public/hero-iphones-transparent.png";
-import colorsImage from "../public/hero-iphone-13-transparent.png";
-import studioImage from "../public/hero-mac-studio-transparent.png";
+import imacImage from "../public/hero/image1-transparent.png";
+import headphonesImage from "../public/hero/image0-transparent.png";
+import iphonesImage from "../public/hero/image23-transparent.png";
+import laptopsImage from "../public/hero/image24-transparent.png";
+import macbookImage from "../public/hero/image25-transparent.png";
+import ipadImage from "../public/hero/image12-transparent.png";
+import watchImage from "../public/hero/image30-transparent.png";
 
 const slides = [
-  { src: collectionImage, label: "The Apple collection", alt: "MacBook, iPad, iPhone, AirPods, and Apple Watch" },
-  { src: iphonesImage, label: "Find your iPhone", alt: "Titanium and pink iPhones" },
-  { src: colorsImage, label: "A color for every you", alt: "iPhone 13 in five colors" },
-  { src: studioImage, label: "Space for your best work", alt: "Mac Studio and Studio Display" },
+  { src: imacImage, label: "Brighten your workspace", alt: "Colorful iMac desktop computers shown from the front and back" },
+  { src: headphonesImage, label: "Sound all around you", alt: "AirPods Max headphones in a range of colors" },
+  { src: iphonesImage, label: "Find your iPhone", alt: "iPhones in black, white, green, blue, and purple", className: "hero-slide-phone" },
+  { src: laptopsImage, label: "A color for every day", alt: "Open Apple laptops in silver, pink, yellow, and blue" },
+  { src: macbookImage, label: "Space for your best work", alt: "MacBook displaying a blue abstract wallpaper" },
+  { src: ipadImage, label: "Make room for creativity", alt: "Colorful iPads with an Apple Pencil and keyboard" },
+  { src: watchImage, label: "Ready for your next adventure", alt: "Black Apple Watch with a black sport band" },
 ];
 
 function subscribeToMotion(callback: () => void) {
@@ -65,7 +71,7 @@ export default function HeroSlider() {
       }}>
       <div className="hero-art hero-slides" aria-live={rotating ? "off" : "polite"} aria-atomic="true">
         {slides.map((slide, index) => (
-          <div key={slide.label} className={`hero-slide ${index === active ? "is-active" : ""}`}
+          <div key={slide.label} className={`hero-slide ${slide.className ?? ""} ${index === active ? "is-active" : ""}`}
             role="group" aria-roledescription="slide" aria-label={`${index + 1} of ${slides.length}`} aria-hidden={index !== active}>
             {(index === active || requested.includes(index)) && <Image className="hero-image" src={slide.src} alt={slide.alt} fill
               sizes="(max-width: 760px) calc(100vw - 40px), 58vw" placeholder="blur"
@@ -75,7 +81,7 @@ export default function HeroSlider() {
         ))}
       </div>
       <div className="hero-slider-footer">
-        <p className="hero-slide-caption"><span className="hero-slide-number">{String(active + 1).padStart(2, "0")} / 04</span>{slides[active].label}</p>
+        <p className="hero-slide-caption"><span className="hero-slide-number">{String(active + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}</span>{slides[active].label}</p>
         <div className="hero-slider-controls">
         <button type="button" aria-label="Previous image" onClick={() => selectSlide(active - 1)}><ChevronLeft size={17} /></button>
         <div className="hero-slider-dots">

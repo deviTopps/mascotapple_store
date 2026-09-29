@@ -7,6 +7,8 @@ import SiteFooter from "./site-footer";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import HeroSlider from "./hero-slider";
+import HomeFaq from "./home-faq";
+import CustomerReviews from "./customer-reviews";
 import headerStyles from "./header.module.css";
 import cardStyles from "./product-cards.module.css";
 import { useCatalog } from "./catalog-provider";
@@ -177,6 +179,8 @@ export default function Home() {
           ))}
         </div>
       </section>
+      <CustomerReviews />
+      <HomeFaq />
       <section className="offer-strip"><h2>More ways to make<br /><em>your moment.</em></h2><div className="offer-pills"><Link className="offer-shop-button" href="/products">Shop Now</Link></div></section>
       <SiteFooter />
 
