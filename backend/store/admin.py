@@ -3,8 +3,8 @@ from django.db import transaction
 from django.utils import timezone
 from django.urls import reverse
 from django.utils.html import format_html
-from .forms import ProductAdminForm, OtherOptionForm, ProductColorImageForm
-from .models import Category, Product, ProductOption, ProductColorImage, Order, OrderItem
+from .forms import ProductAdminForm, OtherOptionForm
+from .models import Category, Product, ProductOption, Order, OrderItem
 admin.site.site_header = 'Mascot Store Administration'
 admin.site.site_title = 'Mascot Admin'
 admin.site.index_title = 'Manage your store'
@@ -18,13 +18,6 @@ class OptionInline(admin.TabularInline):
     def get_queryset(self, request):
         return super().get_queryset(request).exclude(key__in=['color', 'storage'])
 
-class ColorImageInline(admin.TabularInline):
-    model = ProductColorImage
-    form = ProductColorImageForm
-    extra = 0
-    fields = ['color', 'image', 'image_alt']
-    verbose_name_plural = 'Color photos (match the Product Color names above)'
-
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     form = ProductAdminForm
@@ -35,7 +28,7 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ['name', 'slug']
     prepopulated_fields = {'slug': ('name',)}
     readonly_fields = ['updated_at']
-    inlines = [ColorImageInline, OptionInline]
+    inlines = [OptionInline]
     save_on_top = True
 
     @admin.display(description='Edit')

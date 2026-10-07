@@ -46,22 +46,6 @@ class ProductOption(models.Model):
     def value_list(self): return list(dict.fromkeys(v.strip() for v in self.values.splitlines() if v.strip()))
     def __str__(self): return f'{self.product}: {self.label}'
 
-class ProductColorImage(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='color_images')
-    color = models.CharField(max_length=60, help_text='Match a color from Product Color above, e.g. Red.')
-    image = models.ImageField(upload_to='products/colors/')
-    image_alt = models.CharField(max_length=300, blank=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        constraints = [models.UniqueConstraint(fields=['product', 'color'], name='unique_product_color_image')]
-
-    def clean(self):
-        self.color = self.color.strip()
-
-    def __str__(self):
-        return f'{self.product}: {self.color}'
-
 class Order(models.Model):
     reference = models.CharField(max_length=100, unique=True)
     name = models.CharField(max_length=100)

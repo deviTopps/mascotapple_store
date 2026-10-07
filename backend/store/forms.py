@@ -1,6 +1,6 @@
 from django import forms
 from pathlib import Path
-from .models import Product, ProductOption, ProductColorImage
+from .models import Product, ProductOption
 
 class ProductAdminForm(forms.ModelForm):
     def clean_image(self):
@@ -51,11 +51,3 @@ class OtherOptionForm(forms.ModelForm):
         if key.lower() in ['color', 'storage']:
             raise forms.ValidationError('Use the Product Color or Storage Size fields above for this option.')
         return key
-
-
-class ProductColorImageForm(forms.ModelForm):
-    clean_image = ProductAdminForm.clean_image
-
-    class Meta:
-        model = ProductColorImage
-        fields = '__all__'
