@@ -10,6 +10,7 @@ import laptopsImage from "../public/hero/image24-transparent.png";
 import macbookImage from "../public/hero/image25-transparent.png";
 import ipadImage from "../public/hero/image12-transparent.png";
 import watchImage from "../public/hero/image30-transparent.png";
+import foldablePhoneImage from "../public/hero/foldable-phone-transparent.png";
 
 const slides = [
   { src: imacImage, label: "Brighten your workspace", alt: "Colorful iMac desktop computers shown from the front and back" },
@@ -19,6 +20,7 @@ const slides = [
   { src: macbookImage, label: "Space for your best work", alt: "MacBook displaying a blue abstract wallpaper" },
   { src: ipadImage, label: "Make room for creativity", alt: "Colorful iPads with an Apple Pencil and keyboard" },
   { src: watchImage, label: "Ready for your next adventure", alt: "Black Apple Watch with a black sport band" },
+  { src: foldablePhoneImage, label: "A new perspective", alt: "Silver foldable phone concept shown open with a desert landscape on its screen" },
 ];
 
 function subscribeToMotion(callback: () => void) {
