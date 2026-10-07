@@ -11,6 +11,7 @@ export type Product = {
   tone: string;
   image: string;
   imageAlt: string;
+  colorImages?: { color: string; image: string; imageAlt: string }[];
   highlights: string[];
   options?: { id: string; label: string; values: string[] }[];
 };

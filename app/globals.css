@@ -233,3 +233,6 @@
 .store-unavailable p { color: #737373; font-size: 15px; line-height: 1.6; max-width: 420px; }
 .store-unavailable button { border: 0; border-radius: 10px; background: #0076a5; color: white; font: inherit; min-height: 44px; padding: 12px 24px; margin-top: 12px; }
 .store-unavailable button:focus-visible { outline: 2px solid #0076a5; outline-offset: 4px; }
+
+.product-color-caption { position: absolute; bottom: 12px; left: 12px; right: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; padding: 10px 12px; border-radius: 12px; background: rgb(255 255 255 / 94%); color: #454545; font-size: 12px; text-align: center; }
+.product-color-swatch { flex: 0 0 14px; width: 14px; height: 14px; border-radius: 50%; border: 1px solid #888; }

@@ -8,6 +8,18 @@ from .models import Category, Product, ProductOption, Order
 
 @override_settings(INTERNAL_API_TOKEN='test-service-token')
 class StoreTests(TestCase):
+    def test_color_photos_are_in_catalog_with_versioned_urls(self):
+        from .models import ProductColorImage
+        from datetime import timedelta
+        photo = ProductColorImage.objects.create(product=self.product, color='Red', image='products/colors/red.webp')
+        first = self.client.get('/api/catalog/').json()['products'][0]['colorImages'][0]
+        self.assertEqual(first['color'], 'Red')
+        self.assertEqual(first['imageAlt'], 'Test Phone in Red')
+        self.assertTrue(first['image'].startswith('/api/store-media/products/colors/red.webp?v='))
+        ProductColorImage.objects.filter(pk=photo.pk).update(updated_at=photo.updated_at + timedelta(seconds=1))
+        second = self.client.get('/api/catalog/').json()['products'][0]['colorImages'][0]
+        self.assertNotEqual(first['image'], second['image'])
+
     def test_updated_product_image_gets_a_new_cache_url(self):
         from datetime import timedelta
         from urllib.parse import urlsplit, parse_qs
@@ -85,6 +97,7 @@ class StoreTests(TestCase):
             'tone': 'sand', 'is_active': 'on', 'sort_order': '0',
             'product_color': 'Blue\nSilver', 'storage_size': '256 GB\n512 GB',
             'options-TOTAL_FORMS': '0', 'options-INITIAL_FORMS': '0', 'options-MIN_NUM_FORMS': '0', 'options-MAX_NUM_FORMS': '1000',
+            'color_images-TOTAL_FORMS': '0', 'color_images-INITIAL_FORMS': '0', 'color_images-MIN_NUM_FORMS': '0', 'color_images-MAX_NUM_FORMS': '1000',
             '_save': 'Save',
         })
         self.assertEqual(response.status_code, 302)

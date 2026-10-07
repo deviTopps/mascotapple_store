@@ -1,0 +1,31 @@
+import { test, expect } from '@playwright/test';
+
+test('selected colors update the preview and uploaded photos take priority', async ({ page }) => {
+  await page.goto('/products/iphone-17-pro');
+  const data = await (await page.request.get('/api/products')).json();
+  const product = data.products.find((item: { slug: string }) => item.slug === 'iphone-17-pro');
+  product.options = [{ id: 'color', label: 'Color', values: ['Red', 'Blue', 'Silver'] }];
+  product.colorImages = [{ color: 'Silver', image: product.image, imageAlt: 'Actual silver product photo' }];
+  await page.route('**/api/products', route => route.fulfill({ json: data }));
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  const color = page.getByRole('combobox', { name: 'Color', exact: true });
+  await expect(color.locator('option')).toHaveCount(4);
+  const image = page.locator('.product-detail-image');
+  await color.selectOption('Red');
+  await expect(image).toHaveAttribute('alt', /approximate Red/);
+  await expect(page.locator('.product-color-caption')).toContainText('Approximate color preview');
+  await page.screenshot({ path: `/tmp/mascot-color-${test.info().project.name}.png` });
+  const red = await page.locator('feFuncR').getAttribute('tableValues');
+  await color.selectOption('Blue');
+  expect(await page.locator('feFuncR').getAttribute('tableValues')).not.toBe(red);
+  await expect(image).toHaveAttribute('alt', /approximate Blue/);
+  await color.selectOption('Silver');
+  await expect(image).toHaveAttribute('alt', 'Actual silver product photo');
+  await expect(image).not.toHaveAttribute('style', /filter/);
+  await expect(page.locator('.product-color-caption')).toHaveText('Silver');
+  await color.selectOption('Red');
+  const reject = page.getByRole('button', { name: 'Reject optional' });
+  if (await reject.isVisible()) await reject.click();
+  await page.getByRole('button', { name: 'Add to cart', exact: true }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'added to your cart' })).toContainText('Red');
+});
