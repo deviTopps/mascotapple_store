@@ -36,6 +36,9 @@ const nextConfig: NextConfig = {
     ] }];
   },
   images: {
+    // Serve originals directly so storefront images remain available when
+    // the hosting provider's paid image optimization quota is exhausted.
+    unoptimized: true,
     localPatterns: [
       { pathname: '/**', search: '' },
       // Product versions change when an image is replaced. The media route
