@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
-from .models import Product, Order, OrderItem
+from .models import Product, Order, OrderItem, configured_price
 
 @require_GET
 def health(request):
@@ -23,8 +23,8 @@ def health(request):
 @require_GET
 def catalog(request):
     result = []
-    for p in Product.objects.filter(is_active=True).select_related('category').prefetch_related('options'):
-        result.append({'slug': p.slug, 'name': p.name, 'category': p.category.name, 'price': f'GH₵{p.price:,.2f}' if p.price is not None else 'Contact for price', 'priceValue': float(p.price) if p.price is not None else None, 'tag': p.tag, 'description': p.description, 'longDescription': p.long_description, 'image': f'/api/store-media/{p.image.name}?v={int(p.updated_at.timestamp() * 1000000)}' if p.image else p.image_path or '/main_logo.jpg', 'imageAlt': p.image_alt or p.name, 'highlights': [v.strip() for v in p.highlights.splitlines() if v.strip()], 'visual': p.visual, 'tone': p.tone, 'options': [{'id': o.key, 'label': o.label, 'values': o.value_list()} for o in p.options.all()]})
+    for p in Product.objects.filter(is_active=True).select_related('category').prefetch_related('options', 'variant_prices'):
+        result.append({'slug': p.slug, 'name': p.name, 'category': p.category.name, 'price': f'GH₵{p.price:,.2f}' if p.price is not None else 'Contact for price', 'priceValue': float(p.price) if p.price is not None else None, 'tag': p.tag, 'description': p.description, 'longDescription': p.long_description, 'image': f'/api/store-media/{p.image.name}?v={int(p.updated_at.timestamp() * 1000000)}' if p.image else p.image_path or '/main_logo.jpg', 'imageAlt': p.image_alt or p.name, 'highlights': [v.strip() for v in p.highlights.splitlines() if v.strip()], 'visual': p.visual, 'tone': p.tone, 'variantPrices': [{'selections': v.selections, 'priceValue': float(v.price)} for v in p.variant_prices.all()], 'options': [{'id': o.key, 'label': o.label, 'values': o.value_list()} for o in p.options.all()]})
     return JsonResponse({'products': result}, headers={'Cache-Control': 'no-store'})
 
 def internal(view):
@@ -53,17 +53,19 @@ def create_order(request):
         items = []
         seen = set()
         for line in lines:
-            p = Product.objects.prefetch_related('options').get(slug=line['slug'], is_active=True)
+            p = Product.objects.prefetch_related('options', 'variant_prices').get(slug=line['slug'], is_active=True)
             quantity = line['quantity']
-            if type(quantity) is not int or not 1 <= quantity <= 99 or p.price is None: raise ValueError('Invalid quantity or price')
+            if type(quantity) is not int or not 1 <= quantity <= 99: raise ValueError('Invalid quantity or price')
             selections = line['selections']
             options = {o.key: o.value_list() for o in p.options.all()}
             if not isinstance(selections, dict) or set(selections) != set(options) or any(v not in options[k] for k, v in selections.items()): raise ValueError('Invalid product options')
             identity = (p.pk, json.dumps(selections, sort_keys=True))
             if identity in seen: raise ValueError('Duplicate variant')
             seen.add(identity)
-            amount += int(p.price * 100) * quantity
-            items.append((p, quantity, selections))
+            unit_price = configured_price(p, selections)
+            if unit_price is None: raise ValueError('Price confirmation required')
+            amount += int(unit_price * 100) * quantity
+            items.append((p, quantity, selections, unit_price))
         if amount != data['amount'] or data['currency'] != 'GHS': raise ValueError('Prices changed. Refresh your cart.')
         if data['delivery'] not in ['pickup', 'delivery']: raise ValueError('Invalid delivery')
         payment_method = data.get('paymentMethod', 'paystack')
@@ -74,11 +76,11 @@ def create_order(request):
                 matches = payment_method == 'cod' and order.payment_method == 'cod' and order.amount == Decimal(amount) / 100
                 matches = matches and all(getattr(order, k) == data.get(k, '') for k in ['name','email','phone','delivery','address','city','notes']) and order.location == data.get('location')
                 saved = [(line.product_id, line.quantity, line.selections) for line in order.items.order_by('id')]
-                matches = matches and saved == [(p.pk, q, s) for p, q, s in items]
+                matches = matches and saved == [(p.pk, q, s) for p, q, s, price in items]
                 if matches: return JsonResponse({'reference': order.reference, 'status': 'placed'})
                 return JsonResponse({'error': 'Reference already exists'}, status=409)
             order.full_clean()
-            OrderItem.objects.bulk_create([OrderItem(order=order, product=p, name=p.name, quantity=q, selections=s, unit_price=p.price) for p,q,s in items])
+            OrderItem.objects.bulk_create([OrderItem(order=order, product=p, name=p.name, quantity=q, selections=s, unit_price=price) for p,q,s,price in items])
         return JsonResponse({'reference': order.reference}, status=201)
     except (KeyError, TypeError, ValueError, ValidationError, Product.DoesNotExist):
         return JsonResponse({'error': 'Invalid order. Check the details and refresh your cart.'}, status=400)

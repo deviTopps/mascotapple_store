@@ -1,6 +1,6 @@
 from django import forms
 from pathlib import Path
-from .models import Product, ProductOption
+from .models import Product, ProductOption, ProductVariantPrice
 
 class ProductAdminForm(forms.ModelForm):
     def clean_image(self):
@@ -51,3 +51,56 @@ class OtherOptionForm(forms.ModelForm):
         if key.lower() in ['color', 'storage']:
             raise forms.ValidationError('Use the Product Color or Storage Size fields above for this option.')
         return key
+
+
+class VariantPriceForm(forms.ModelForm):
+    selections = forms.CharField(widget=forms.Textarea(attrs={'rows': 3, 'cols': 35, 'placeholder': 'storage=256GB\ncolor=BLUE'}), help_text='One option=value per line. Include every option for this configuration, using exact values from the product options.')
+
+    class Meta:
+        model = ProductVariantPrice
+        fields = ['selections', 'price']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.initial['selections'] = '\n'.join(f'{key}={value}' for key, value in self.instance.selections.items())
+
+    def clean_selections(self):
+        result = {}
+        for line in self.cleaned_data['selections'].splitlines():
+            if not line.strip(): continue
+            key, separator, value = line.partition('=')
+            key, value = key.strip(), value.strip()
+            if not separator or not key or not value or key in result:
+                raise forms.ValidationError('Use one option=value per line, with no duplicate option names.')
+            result[key] = value
+        if not result: raise forms.ValidationError('Enter a configuration.')
+        return dict(sorted(result.items()))
+
+
+class VariantPriceFormSet(forms.BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+        if any(self.errors): return
+        options = {o.key: o.value_list() for o in self.instance.options.all()} if self.instance.pk else {}
+        for field, key in [('storage_size', 'storage'), ('product_color', 'color')]:
+            if field in self.data:
+                values = ProductAdminForm.normalize(self.data[field]).splitlines()
+                if values: options[key] = values
+                else: options.pop(key, None)
+        # Include other option rows being edited in the same admin submission.
+        for index in range(int(self.data.get('options-TOTAL_FORMS', 0))):
+            prefix = f'options-{index}-'
+            key = self.data.get(prefix + 'key', '').strip()
+            if not key: continue
+            if self.data.get(prefix + 'DELETE'): options.pop(key, None)
+            else: options[key] = ProductAdminForm.normalize(self.data.get(prefix + 'values', '')).splitlines()
+        seen = set()
+        for form in self.forms:
+            if not form.cleaned_data or form.cleaned_data.get('DELETE'): continue
+            selections = form.cleaned_data.get('selections', {})
+            if set(selections) != set(options) or any(value not in options.get(key, []) for key, value in selections.items()):
+                raise forms.ValidationError('Each variant price must include every product option, with values matching the options above.')
+            identity = tuple(sorted(selections.items()))
+            if identity in seen: raise forms.ValidationError('Only one price is allowed per configuration.')
+            seen.add(identity)

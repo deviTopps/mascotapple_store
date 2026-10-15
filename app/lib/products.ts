@@ -12,6 +12,7 @@ export type Product = {
   image: string;
   imageAlt: string;
   highlights: string[];
+  variantPrices?: { selections: Record<string, string>; priceValue: number }[];
   options?: { id: string; label: string; values: string[] }[];
 };
 

@@ -1,4 +1,4 @@
-import { validSelections, cartLineKey } from "./product-options";
+import { validSelections, cartLineKey, configuredPrice } from "./product-options";
 import { products, type Product } from "./products";
 
 export function validateOrder(body: unknown, catalog: Product[] = products) {
@@ -21,12 +21,14 @@ export function validateOrder(body: unknown, catalog: Product[] = products) {
   const items = input.items.map(item => {
     if (!item || typeof item.slug !== "string" || !Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 99) throw new Error("Invalid cart quantity or product.");
     const product = catalog.find(p => p.slug === item.slug);
-    if (!product || product.priceValue === null) throw new Error("A product needs a confirmed price before checkout.");
+    if (!product) throw new Error("A product needs a confirmed price before checkout.");
     if (!validSelections(product.slug, item.selections, catalog)) throw new Error("Choose valid product options before checkout.");
+    const price = configuredPrice(product, item.selections);
+    if (price === null) throw new Error("A product needs a confirmed price before checkout.");
     const id = cartLineKey(item);
     if (seen.has(id)) throw new Error("Duplicate product configuration.");
     seen.add(id);
-    return { slug: product.slug, selections: item.selections, name: product.name, quantity: item.quantity as number, unitAmount: Math.round(product.priceValue * 100) };
+    return { slug: product.slug, selections: item.selections, name: product.name, quantity: item.quantity as number, unitAmount: Math.round(price * 100) };
   });
   const amount = items.reduce((sum, item) => sum + item.unitAmount * item.quantity, 0);
   const delivery = field("delivery", 1, 20);

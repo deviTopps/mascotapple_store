@@ -35,6 +35,30 @@ class StoreTests(TestCase):
         self.order = {'reference':'mascot-test-order','name':'Test Buyer','email':'buyer@example.com','phone':'+233200000000','delivery':'pickup','address':'','city':'','notes':'','location':None,'amount':9900,'currency':'GHS','items':[{'slug':'test-phone','quantity':1,'selections':{'storage':'128 GB'}}]}
     def post(self, path, data, token='test-service-token'):
         return self.client.post(path, json.dumps(data), content_type='application/json', HTTP_AUTHORIZATION='Bearer '+token)
+    def test_variant_prices_are_published_and_enforced_on_orders(self):
+        from .models import ProductVariantPrice
+        ProductVariantPrice.objects.create(product=self.product, selections={'storage': '256 GB'}, price='149.50')
+        item = self.client.get('/api/catalog/').json()['products'][0]
+        self.assertEqual(item['variantPrices'], [{'selections': {'storage': '256 GB'}, 'priceValue': 149.5}])
+        self.order['items'][0]['selections'] = {'storage': '256 GB'}
+        self.assertEqual(self.post('/api/orders/', self.order).status_code, 400)
+        self.order['amount'] = 14950
+        self.assertEqual(self.post('/api/orders/', self.order).status_code, 201)
+        self.assertEqual(Order.objects.get().items.get().unit_price, Decimal('149.50'))
+
+    def test_variant_formset_validates_complete_configurations(self):
+        from .forms import VariantPriceFormSet, VariantPriceForm
+        from .models import ProductVariantPrice
+        from django.forms.models import inlineformset_factory
+        FormSet = inlineformset_factory(Product, ProductVariantPrice, form=VariantPriceForm, formset=VariantPriceFormSet, extra=0)
+        data = {'variant_prices-TOTAL_FORMS': '1', 'variant_prices-INITIAL_FORMS': '0', 'variant_prices-0-selections': 'storage=256 GB', 'variant_prices-0-price': '149.50'}
+        self.assertTrue(FormSet(data, instance=self.product).is_valid())
+        data['variant_prices-0-selections'] = 'storage=Unknown'
+        self.assertFalse(FormSet(data, instance=self.product).is_valid())
+        data['variant_prices-0-selections'] = 'storage=256 GB'
+        data['product_color'] = 'Blue'
+        self.assertFalse(FormSet(data, instance=self.product).is_valid())
+
     def test_catalog_tracks_admin_product_values(self):
         self.product.name = 'Renamed Phone'
         self.product.price = Decimal('125.50')
@@ -85,6 +109,7 @@ class StoreTests(TestCase):
             'tone': 'sand', 'is_active': 'on', 'sort_order': '0',
             'product_color': 'Blue\nSilver', 'storage_size': '256 GB\n512 GB',
             'options-TOTAL_FORMS': '0', 'options-INITIAL_FORMS': '0', 'options-MIN_NUM_FORMS': '0', 'options-MAX_NUM_FORMS': '1000',
+            'variant_prices-TOTAL_FORMS': '0', 'variant_prices-INITIAL_FORMS': '0',
             '_save': 'Save',
         })
         self.assertEqual(response.status_code, 302)

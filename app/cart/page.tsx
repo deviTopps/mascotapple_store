@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import ProductOptions from "../product-options";
-import { cartLineKey, validSelections } from "../lib/product-options";
+import { configuredProduct, cartLineKey, validSelections } from "../lib/product-options";
 import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
@@ -15,7 +15,7 @@ export default function CartPage() {
   const products = useCatalog();
   const { items, count, ready, setQuantity, setSelections } = useCart();
   const [error, setError] = useState("");
-  const lines = items.map(item => ({ ...item, product: products.find(p => p.slug === item.slug)! }));
+  const lines = items.map(item => ({ ...item, product: configuredProduct(products.find(p => p.slug === item.slug)!, item.selections) }));
   const needsOptions = lines.some(line => !validSelections(line.slug, line.selections, products));
   const needsQuote = lines.some(line => line.product.priceValue === null);
   const subtotal = lines.reduce((sum, line) => sum + (line.product.priceValue ?? 0) * line.quantity, 0);

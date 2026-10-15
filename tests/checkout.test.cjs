@@ -97,3 +97,14 @@ test('supports pay on delivery without skipping order validation', () => {
   assert.throws(() => validateOrder({ ...order, paymentMethod: 'unknown' }));
   assert.throws(() => validateOrder({ ...order, paymentMethod: 'cod', delivery: 'delivery' }));
 });
+
+test('variant configuration prices drive checkout totals with base-price fallback', () => {
+  const { products } = require('../app/lib/products.ts');
+  const { configuredPrice } = require('../app/lib/product-options.ts');
+  const original = products.find(p => p.slug === 'iphone-17-pro');
+  const product = { ...original, variantPrices: [{ selections: { color: 'Silver', storage: '256 GB' }, priceValue: 1200.50 }] };
+  assert.equal(configuredPrice(product, order.items[0].selections), 1200.50);
+  assert.equal(validateOrder(order, [product]).amount, 240100);
+  assert.equal(configuredPrice(product, { storage: '128 GB', color: 'Silver' }), original.priceValue);
+  assert.equal(configuredPrice(product, { storage: '256 GB' }), original.priceValue);
+});

@@ -42,3 +42,17 @@ export function selectionLabel(selections: Selections = {}) {
 export function cartLineKey(item: { slug: string; selections?: Selections }) {
   return JSON.stringify([item.slug, Object.entries(item.selections ?? {}).sort(([a], [b]) => a.localeCompare(b))]);
 }
+
+
+export function configuredPrice(product: Product, selections: Selections = {}): number | null {
+  const variant = product.variantPrices?.find(variant =>
+    Object.keys(variant.selections).length === Object.keys(selections).length &&
+    Object.entries(variant.selections).every(([key, value]) => selections[key] === value)
+  );
+  return variant?.priceValue ?? product.priceValue;
+}
+
+export function configuredProduct(product: Product, selections: Selections = {}): Product {
+  const priceValue = configuredPrice(product, selections);
+  return { ...product, priceValue };
+}

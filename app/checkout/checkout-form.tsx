@@ -8,7 +8,7 @@ import LoadingSkeleton from "../loading-skeleton";
 import { displayOrderReference } from "../lib/order-reference";
 import { LockKeyhole } from "lucide-react";
 import { useCart, money, removePurchased, type CartItem } from "../cart-store";
-import { cartLineKey, validSelections, selectionLabel } from "../lib/product-options";
+import { configuredProduct, cartLineKey, validSelections, selectionLabel } from "../lib/product-options";
 import { useCatalog } from "../catalog-provider";
 
 export default function CheckoutForm({ configured }: { configured: boolean }) {
@@ -21,7 +21,7 @@ export default function CheckoutForm({ configured }: { configured: boolean }) {
   const [busy, setBusy] = useState(false);
   const inFlight = useRef(false);
   const [error, setError] = useState("");
-  const lines = items.map(item => ({ ...item, product: products.find(p => p.slug === item.slug)! }));
+  const lines = items.map(item => ({ ...item, product: configuredProduct(products.find(p => p.slug === item.slug)!, item.selections) }));
   const subtotal = lines.reduce((sum, line) => sum + (line.product.priceValue ?? 0) * line.quantity, 0);
   const delivery = subtotal > 75 ? requestedDelivery : 'pickup';
   const needsQuote = lines.some(line => line.product.priceValue === null);

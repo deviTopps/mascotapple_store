@@ -46,6 +46,28 @@ class ProductOption(models.Model):
     def value_list(self): return list(dict.fromkeys(v.strip() for v in self.values.splitlines() if v.strip()))
     def __str__(self): return f'{self.product}: {self.label}'
 
+class ProductVariantPrice(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variant_prices')
+    selections = models.JSONField(help_text='Exact configuration: one option=value per line, e.g. storage=256GB and color=BLUE. Use the exact option values above.')
+    price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.01)], help_text='Full price in GHS for this configuration, not a surcharge.')
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['product', 'selections'], name='unique_product_variant_price')]
+
+    def clean(self):
+        if not isinstance(self.selections, dict) or not self.selections or any(not isinstance(k, str) or not isinstance(v, str) or not k or not v for k, v in self.selections.items()):
+            raise ValidationError({'selections': 'Enter at least one option=value pair.'})
+        self.selections = dict(sorted(self.selections.items()))
+
+    def __str__(self): return ' · '.join(self.selections.values())
+
+
+def configured_price(product, selections):
+    for variant in product.variant_prices.all():
+        if variant.selections == selections:
+            return variant.price
+    return product.price
+
 class Order(models.Model):
     reference = models.CharField(max_length=100, unique=True)
     name = models.CharField(max_length=100)

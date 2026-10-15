@@ -23,7 +23,7 @@ The setup command migrates the database, imports the starter catalog without ove
 
 ## Manage the store
 
-Use Products to edit names, prices (GHS), descriptions, photos, visibility and ordering. Upload a photo or keep its existing storefront path. Set one highlight per line. Under Product options add Storage, Color or Size groups, with one allowed value per line. Options currently share the product's base price; variant-specific pricing and inventory are not implemented.
+Use Products to edit names, prices (GHS), descriptions, photos, visibility and ordering. Upload a photo or keep its existing storefront path. Set one highlight per line. Under Product options add Storage, Color or Size groups, with one allowed value per line. Under Variant prices, add an exact configuration (one option=value per line, including every option) and its full GHS price. For example, storage=256GB and color=BLUE on separate lines. Values must exactly match the options above. Configurations without a custom price use the product's base price. The selected price is shown before adding to cart and revalidated at checkout. Inventory is not implemented.
 
 Reload the storefront after saving changes in admin. It loads active products and options from Django without a catalog cache. Uploaded images are served through the Next.js media proxy. The storefront's hardcoded starter catalog is used only when `DJANGO_API_URL` is not configured. If a configured backend is down, catalog loading fails visibly rather than silently accepting stale prices.
 
