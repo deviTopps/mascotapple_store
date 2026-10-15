@@ -67,7 +67,24 @@ export default function Catalog() {
       <div className={header.spacer} aria-hidden="true" />
       <div className={styles.content}>
         <nav className={styles.breadcrumb} aria-label="Breadcrumb"><Link href="/">Home</Link><ChevronRight size={13} /><span aria-current="page">Shop</span></nav>
-        <div className={styles.intro}><div><h1>Premium Tech<br />Get Value for Money</h1><p>Shop the latest Apple products, laptops, gaming, TVs, audios and everyday devices and accessories</p></div><span className={styles.collectionCount}>{products.length} products in the collection</span></div>
+        <section className={styles.intro} aria-labelledby="shop-heading">
+          <div className={styles.heroCopy}>
+            <span className={styles.eyebrow}>THE MASCOT COLLECTION</span>
+            <h1 id="shop-heading">Premium Tech<br /><span>Get Value for Money</span></h1>
+            <p>From everyday essentials to your next big upgrade. Discover tech you’ll love, at prices that make sense.</p>
+            <a className={styles.heroCta} href="#shop-results">Explore the collection <ArrowRight size={18} aria-hidden="true" /></a>
+            <span className={styles.collectionCount}>{products.length} products. Plenty of possibilities.</span>
+          </div>
+          <div className={styles.heroVisual}>
+            <span className={styles.heroOrbit} aria-hidden="true" />
+            <Image src="/hero-apple-devices-transparent.png" alt="A collection of Apple devices" fill sizes="(max-width: 760px) 90vw, 50vw" loading="eager" className={styles.heroImage} />
+            <span className={styles.heroCaption}>Made for work. Ready for play.</span>
+          </div>
+        </section>
+        <nav className={styles.categoryNav} aria-label="Browse by category">
+          <span>Find your favourite</span>
+          {categories.map(category => <button key={category} onClick={() => { const next = new URLSearchParams(); next.set('category', category); window.history.pushState(null, '', `/products?${next}`); }} aria-pressed={selectedCategories.includes(category)}>{category}<ArrowRight size={14} aria-hidden="true" /></button>)}
+        </nav>
         <div className={styles.toolbar}>
           <label className={styles.search}><Search size={20} aria-hidden="true" /><input type="search" aria-label="Search all products" placeholder="Search products" value={params.get("q") ?? ""} onChange={(event) => update("q", event.target.value, false, true)} /></label>
           <button className={styles.filterToggle} onClick={() => setFiltersOpen((open) => !open)} aria-expanded={filtersOpen} aria-controls="catalog-filters"><SlidersHorizontal size={17} /> Filters {activeFilters.length > 0 && <span>{activeFilters.length}</span>}</button>
@@ -80,7 +97,7 @@ export default function Catalog() {
             <fieldset><legend>Price range <span>GH₵</span></legend><div className={styles.priceRange}><label>Min<input type="number" min="0" step="any" inputMode="decimal" placeholder="0" value={params.get("min") ?? ""} onChange={(event) => update("min", event.target.value, false, true)} /></label><span>–</span><label>Max<input type="number" min="0" step="any" inputMode="decimal" placeholder="Any" value={params.get("max") ?? ""} onChange={(event) => update("max", event.target.value, false, true)} /></label></div>{params.get("min") && params.get("max") && Number(params.get("min")) > Number(params.get("max")) && <p className={styles.validation}>Maximum price must be at least the minimum.</p>}</fieldset>
             <fieldset><legend>Highlights</legend>{tags.map((tag) => <label className={styles.checkbox} key={tag}><input type="checkbox" checked={selectedTags.includes(tag)} onChange={() => update("tag", tag, true)} /><span>{tag}</span></label>)}</fieldset>
           </aside>
-          <section className={styles.results} aria-label="Product results">
+          <section id="shop-results" className={styles.results} aria-label="Product results">
             <p className={styles.resultCount} role="status" ref={resultsHeading} tabIndex={-1}>{results.length} {results.length === 1 ? "product" : "products"}{activeFilters.length ? " found" : ""}{results.length > 0 && ` · Showing ${pagination.start + 1}–${pagination.end}`}</p>
             {activeFilters.length > 0 && <div className={styles.chips}>{activeFilters.map(([key, value]) => <button key={`${key}-${value}`} onClick={() => update(key, key === "category" || key === "tag" ? value : "", key === "category" || key === "tag")} aria-label={`Remove ${key} filter: ${value}`}>{key === "min" ? `From GH₵${value}` : key === "max" ? `Up to GH₵${value}` : key === "q" ? `Search: ${value}` : value}<X size={13} /></button>)}</div>}
             {results.length ? <div className={styles.grid}>{pagination.items.map((product) => <article className={`${cards.card} ${styles.productCard}`} key={product.slug}>

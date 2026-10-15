@@ -8,6 +8,7 @@ import { getStoreProducts } from "../../lib/store-backend";
 import { CartLink } from "../../cart-store";
 import ProductActions from "./product-actions";
 import { productStructuredData, serializeJsonLd, storeUrl } from '../../lib/seo';
+import styles from './product-detail.module.css';
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
@@ -26,12 +27,14 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = (await getStoreProducts()).find(product => product.slug === slug);
+  const products = await getStoreProducts();
+  const product = products.find(product => product.slug === slug);
 
   if (!product) notFound();
+  const similarProducts = products.filter(item => item.slug !== slug && item.category === product.category).slice(0, 5);
 
   return (
-    <main className="product-page">
+    <main className={`product-page ${styles.compact}`}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(productStructuredData(product)) }} />
       <header className="site-header product-page-header">
         <Link className="logo-link" href="/" aria-label="Mascot home">
@@ -55,7 +58,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <p className="eyebrow">{product.category}</p>
             <h1>{product.name}</h1>
             <p className="product-detail-price">{product.price}</p>
-            <p className="product-detail-description">{product.longDescription}</p>
+            <p className="product-detail-description">{product.longDescription || product.description}</p>
             <ProductActions productName={product.name} slug={product.slug} />
 
             {product.highlights.length > 0 && <div className="product-highlights">
@@ -67,6 +70,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <Link className="product-support-link" href="/support">Need a hand? Talk to us <ArrowRight size={14} /></Link>
           </div>
         </section>
+
+        {similarProducts.length > 0 && <section className={styles.similar} aria-labelledby="similar-heading">
+          <div className={styles.sectionHeading}><div><p>KEEP EXPLORING</p><h2 id="similar-heading">Similar products</h2></div><Link href={`/products?category=${encodeURIComponent(product.category)}`}>View all {product.category} <ArrowRight size={15} aria-hidden="true" /></Link></div>
+          <div className={styles.grid}>{similarProducts.map(item => <article className={styles.card} key={item.slug}>
+            <Link className={styles.visual} href={`/products/${item.slug}`} aria-label={`View ${item.name}`}><Image src={item.image} alt={item.imageAlt} fill sizes="(max-width: 600px) 44vw, (max-width: 900px) 30vw, 210px" /></Link>
+            <p className={styles.category}>{item.category}</p>
+            <h3><Link href={`/products/${item.slug}`}>{item.name}</Link></h3>
+            <p className={styles.price}>{item.price}</p>
+            <Link className={styles.view} href={`/products/${item.slug}`}>View product <ArrowRight size={14} aria-hidden="true" /></Link>
+          </article>)}</div>
+        </section>}
 
       </div>
 
