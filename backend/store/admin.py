@@ -42,7 +42,7 @@ class ProductAdmin(admin.ModelAdmin):
     def edit_product(self, obj):
         return format_html('<a href="{}" aria-label="Edit {}">Edit product</a>', reverse('admin:store_product_change', args=[obj.pk]), obj.name)
 
-    fieldsets = [('Product', {'fields': ('name','slug','category','price','tag','is_active','sort_order')}), ('Product variants', {'fields': ('product_color', 'storage_size')}), ('Description', {'fields': ('description','long_description','highlights')}), ('Images and appearance', {'fields': ('image','image_path','image_alt','visual','tone')}), ('Record', {'fields': ('updated_at',)})]
+    fieldsets = [('Product', {'fields': ('name','slug','category','price','tag','is_active','sort_order')}), ('Product variants', {'fields': ('product_color', 'storage_size')}), ('Description', {'fields': ('description','long_description','highlights')}), ('Images and appearance', {'fields': ('image','image_2','image_3','image_4','image_path','image_alt','visual','tone')}), ('Record', {'fields': ('updated_at',)})]
 
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)

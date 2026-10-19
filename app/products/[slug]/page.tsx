@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { getStoreProducts } from "../../lib/store-backend";
 import { CartLink } from "../../cart-store";
+import ProductGallery from "./product-gallery";
 import ProductActions from "./product-actions";
 import { productStructuredData, serializeJsonLd, storeUrl } from '../../lib/seo';
 import styles from './product-detail.module.css';
@@ -49,10 +50,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </nav>
 
         <section className="product-detail">
-          <div className="product-detail-visual">
-            <Image className="product-detail-image" src={product.image} alt={product.imageAlt} fill sizes="(max-width: 760px) 90vw, (max-width: 1280px) 50vw, 620px" preload />
-            {product.tag && <span className="product-detail-tag">{product.tag}</span>}
-          </div>
+          <ProductGallery key={product.slug} product={product} />
 
           <div className="product-detail-copy">
             <p className="eyebrow">{product.category}</p>

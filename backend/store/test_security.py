@@ -42,10 +42,12 @@ class SecurityTests(TestCase):
         product = Product.objects.create(name='Phone', slug='phone', category=category)
         output = BytesIO()
         Image.new('RGB', (10, 10)).save(output, format='PNG')
-        def form(name, data):
+        def form(name, data, field='image'):
             return ProductAdminForm(data={'name': 'Phone', 'slug': 'phone', 'category': category.pk, 'visual': 'phone-pro', 'tone': 'sand', 'sort_order': 0},
-                                    files={'image': SimpleUploadedFile(name, data, content_type='image/png')}, instance=product)
-        self.assertTrue(form('phone.png', output.getvalue()).is_valid())
+                                    files={field: SimpleUploadedFile(name, data, content_type='image/png')}, instance=product)
+        for field in ['image', 'image_2', 'image_3', 'image_4']:
+            self.assertTrue(form('phone.png', output.getvalue(), field).is_valid())
+            self.assertIn(field, form('phone.jpg', output.getvalue(), field).errors)
         for name, data in [('phone.jpg', output.getvalue()), ('phone.html', output.getvalue()), ('phone.png', output.getvalue() + b'0' * (5 * 1024 * 1024))]:
             self.assertIn('image', form(name, data).errors)
         with patch.object(Image.Image, 'width', property(lambda self: 5000)), patch.object(Image.Image, 'height', property(lambda self: 5000)):

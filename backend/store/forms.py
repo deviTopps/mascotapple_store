@@ -4,7 +4,14 @@ from .models import Product, ProductOption, ProductVariantPrice
 
 class ProductAdminForm(forms.ModelForm):
     def clean_image(self):
-        image = self.cleaned_data.get('image')
+        return self.validate_product_image(self.cleaned_data.get('image'))
+
+    def clean_image_2(self): return self.validate_product_image(self.cleaned_data.get('image_2'))
+    def clean_image_3(self): return self.validate_product_image(self.cleaned_data.get('image_3'))
+    def clean_image_4(self): return self.validate_product_image(self.cleaned_data.get('image_4'))
+
+    @staticmethod
+    def validate_product_image(image):
         if not image or not hasattr(image, 'content_type'):
             return image
         if image.size > 5 * 1024 * 1024:

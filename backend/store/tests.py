@@ -59,6 +59,20 @@ class StoreTests(TestCase):
         data['product_color'] = 'Blue'
         self.assertFalse(FormSet(data, instance=self.product).is_valid())
 
+    def test_catalog_exposes_up_to_four_images_in_order(self):
+        self.product.image = 'products/front.jpg'
+        self.product.image_2 = 'products/back.jpg'
+        self.product.image_3 = 'products/side.webp'
+        self.product.image_4 = 'products/detail.png'
+        self.product.save()
+        item = self.client.get('/api/catalog/').json()['products'][0]
+        self.assertEqual(len(item['images']), 4)
+        self.assertEqual(item['images'][0], item['image'])
+        self.assertIn('/products/back.jpg?', item['images'][1])
+        self.product.image_2 = ''
+        self.product.save()
+        self.assertEqual(len(self.client.get('/api/catalog/').json()['products'][0]['images']), 3)
+
     def test_catalog_tracks_admin_product_values(self):
         self.product.name = 'Renamed Phone'
         self.product.price = Decimal('125.50')
