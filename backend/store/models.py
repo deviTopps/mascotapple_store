@@ -70,8 +70,8 @@ class ProductVariantPrice(models.Model):
 
 
 def configured_price(product, selections):
-    for variant in product.variant_prices.all():
-        if variant.selections == selections:
+    for variant in sorted(product.variant_prices.all(), key=lambda v: len(v.selections), reverse=True):
+        if variant.selections and all(selections.get(key) == value for key, value in variant.selections.items()):
             return variant.price
     return product.price
 

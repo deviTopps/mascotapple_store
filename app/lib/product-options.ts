@@ -45,10 +45,10 @@ export function cartLineKey(item: { slug: string; selections?: Selections }) {
 
 
 export function configuredPrice(product: Product, selections: Selections = {}): number | null {
-  const variant = product.variantPrices?.find(variant =>
-    Object.keys(variant.selections).length === Object.keys(selections).length &&
+  const variant = product.variantPrices?.filter(variant =>
+    Object.keys(variant.selections).length > 0 &&
     Object.entries(variant.selections).every(([key, value]) => selections[key] === value)
-  );
+  ).sort((a, b) => Object.keys(b.selections).length - Object.keys(a.selections).length)[0];
   return variant?.priceValue ?? product.priceValue;
 }
 

@@ -46,16 +46,16 @@ class StoreTests(TestCase):
         self.assertEqual(self.post('/api/orders/', self.order).status_code, 201)
         self.assertEqual(Order.objects.get().items.get().unit_price, Decimal('149.50'))
 
-    def test_variant_formset_validates_complete_configurations(self):
+    def test_variant_formset_accepts_separate_size_and_price_fields(self):
         from .forms import VariantPriceFormSet, VariantPriceForm
         from .models import ProductVariantPrice
         from django.forms.models import inlineformset_factory
         FormSet = inlineformset_factory(Product, ProductVariantPrice, form=VariantPriceForm, formset=VariantPriceFormSet, extra=0)
-        data = {'variant_prices-TOTAL_FORMS': '1', 'variant_prices-INITIAL_FORMS': '0', 'variant_prices-0-selections': 'storage=256 GB', 'variant_prices-0-price': '149.50'}
+        data = {'variant_prices-TOTAL_FORMS': '1', 'variant_prices-INITIAL_FORMS': '0', 'variant_prices-0-product_size': '256 GB', 'variant_prices-0-price': '149.50'}
         self.assertTrue(FormSet(data, instance=self.product).is_valid())
-        data['variant_prices-0-selections'] = 'storage=Unknown'
-        self.assertFalse(FormSet(data, instance=self.product).is_valid())
-        data['variant_prices-0-selections'] = 'storage=256 GB'
+        data['variant_prices-0-product_size'] = '512GB'
+        self.assertTrue(FormSet(data, instance=self.product).is_valid())
+        data['variant_prices-0-product_color'] = 'Red'
         data['product_color'] = 'Blue'
         self.assertFalse(FormSet(data, instance=self.product).is_valid())
 

@@ -108,3 +108,13 @@ test('variant configuration prices drive checkout totals with base-price fallbac
   assert.equal(configuredPrice(product, { storage: '128 GB', color: 'Silver' }), original.priceValue);
   assert.equal(configuredPrice(product, { storage: '256 GB' }), original.priceValue);
 });
+test('size-only prices apply across colors and exact color overrides take priority', () => {
+  const { configuredPrice } = require('../app/lib/product-options.ts');
+  const product = { priceValue: 100, variantPrices: [
+    { selections: { storage: '256GB' }, priceValue: 15900 },
+    { selections: { storage: '256GB', color: 'Deep Blue' }, priceValue: 18900 },
+  ] };
+  assert.equal(configuredPrice(product, { storage: '256GB', color: 'Silver' }), 15900);
+  assert.equal(configuredPrice(product, { storage: '256GB', color: 'Deep Blue' }), 18900);
+  assert.equal(configuredPrice(product, { storage: '512GB', color: 'Silver' }), 100);
+});

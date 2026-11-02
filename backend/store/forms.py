@@ -64,69 +64,72 @@ class OtherOptionForm(forms.ModelForm):
 
 
 class VariantPriceForm(forms.ModelForm):
-    selections = forms.CharField(widget=forms.Textarea(attrs={'rows': 3, 'cols': 35, 'placeholder': 'storage=256GB\ncolor=BLUE'}), help_text='One option=value per line. Include every option for this configuration, using exact values from the product options.')
+    product_size = forms.CharField(label='Size / storage', required=False, widget=forms.TextInput(attrs={'placeholder': 'e.g. 256GB or 42 mm'}))
+    product_color = forms.CharField(label='Color (optional)', required=False, widget=forms.TextInput(attrs={'placeholder': 'All colors'}), help_text='Leave blank to use this size price for every color.')
 
     class Meta:
         model = ProductVariantPrice
-        fields = ['selections', 'price']
+        fields = ['product_size', 'price', 'product_color']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance.pk:
-            self.initial['selections'] = '\n'.join(f'{key}={value}' for key, value in self.instance.selections.items())
+        values = self.instance.selections or {}
+        self.initial['product_size'] = values.get('storage', values.get('size', ''))
+        self.initial['product_color'] = values.get('color', '')
 
-    def clean_selections(self):
-        result = {}
-        for line in self.cleaned_data['selections'].splitlines():
-            if not line.strip(): continue
-            key, separator, value = line.partition('=')
-            key, value = key.strip(), value.strip()
-            if not separator or not key or not value or key in result:
-                raise forms.ValidationError('Use one option=value per line, with no duplicate option names.')
-            result[key] = value
-        if not result: raise forms.ValidationError('Enter a configuration.')
-        return dict(sorted(result.items()))
+    def _update_errors(self, errors):
+        # The model stores selections internally; show its errors on the visible size input.
+        if hasattr(errors, 'error_dict') and 'selections' in errors.error_dict:
+            errors.error_dict.setdefault('product_size', []).extend(errors.error_dict.pop('selections'))
+        super()._update_errors(errors)
+
+    def clean(self):
+        cleaned = super().clean()
+        values = dict(self.instance.selections or {})
+        size_key = 'size' if 'size' in values else 'storage'
+        product = getattr(self.instance, 'product', None)
+        if product and product.pk and product.options.filter(key='size').exists() and not product.options.filter(key='storage').exists():
+            size_key = 'size'
+        for key in ['storage', 'size', 'color']:
+            values.pop(key, None)
+        size = cleaned.get('product_size', '').strip()
+        color = cleaned.get('product_color', '').strip()
+        if size: values[size_key] = size
+        if color: values['color'] = color
+        if not values:
+            self.add_error('product_size', 'Enter a size/storage value, or a color for a color-only price.')
+        self.instance.selections = dict(sorted(values.items()))
+        cleaned['selections'] = self.instance.selections
+        return cleaned
 
 
 class VariantPriceFormSet(forms.BaseInlineFormSet):
     def clean(self):
         super().clean()
         if any(self.errors): return
-        options = {o.key: o.value_list() for o in self.instance.options.all()} if self.instance.pk else {}
-        for field, key in [('storage_size', 'storage'), ('product_color', 'color')]:
-            if field in self.data:
-                values = ProductAdminForm.normalize(self.data[field]).splitlines()
-                if values: options[key] = values
-                else: options.pop(key, None)
-        # Include other option rows being edited in the same admin submission.
-        for index in range(int(self.data.get('options-TOTAL_FORMS', 0))):
-            prefix = f'options-{index}-'
-            key = self.data.get(prefix + 'key', '').strip()
-            if not key: continue
-            if self.data.get(prefix + 'DELETE'): options.pop(key, None)
-            else: options[key] = ProductAdminForm.normalize(self.data.get(prefix + 'values', '')).splitlines()
+        colors = ProductAdminForm.normalize(self.data.get('product_color', '')).splitlines()
+        if 'product_color' not in self.data and self.instance.pk:
+            option = self.instance.options.filter(key='color').first()
+            colors = option.value_list() if option else []
         seen = set()
         for form in self.forms:
             if not form.cleaned_data or form.cleaned_data.get('DELETE'): continue
-            selections = form.cleaned_data.get('selections', {})
-            problems = []
-            for key in sorted(set(options) - set(selections)):
-                problems.append(f'Missing {key}. Add {key}= followed by one of: {", ".join(options[key])}.')
-            for key in sorted(set(selections) - set(options)):
-                field = {'storage': 'Storage Size', 'color': 'Product Color'}.get(key, 'Other product options')
-                problems.append(f'{key} is not configured. Add {selections[key]} to {field} above, or remove {key}= from this row.')
-            for key in sorted(set(selections) & set(options)):
-                # Case differences are harmless; use the configured spelling in orders.
-                matched = next((value for value in options[key] if value.casefold() == selections[key].casefold()), None)
-                if matched is None:
-                    problems.append(f'{key}={selections[key]} is not allowed. Choose one of: {", ".join(options[key])}.')
-                else:
-                    selections[key] = matched
-            if problems:
-                form.add_error('selections', problems)
-                continue
-            form.cleaned_data['selections'] = dict(sorted(selections.items()))
-            form.instance.selections = form.cleaned_data['selections']
+            selections = form.instance.selections
+            if selections.get('color'):
+                match = next((value for value in colors if value.casefold() == selections['color'].casefold()), None)
+                if not match:
+                    form.add_error('product_color', 'Choose a configured product color: ' + ', '.join(colors) + '. Leave blank for all colors.')
+                    continue
+                selections['color'] = match
+            # Reuse existing spelling for sizes, but permit adding sizes directly here.
+            for key in ['storage', 'size']:
+                if key in selections:
+                    existing = self.instance.options.filter(key=key).first() if self.instance.pk else None
+                    candidates = existing.value_list() if existing else []
+                    selections[key] = next((v for v in candidates if v.replace(' ', '').casefold() == selections[key].replace(' ', '').casefold()), selections[key])
             identity = tuple(sorted(selections.items()))
-            if identity in seen: raise forms.ValidationError('Only one price is allowed per configuration.')
+            if identity in seen:
+                form.add_error('product_size', 'This size and color already has a price. Edit that row instead.')
             seen.add(identity)
+            form.instance.selections = dict(sorted(selections.items()))
+            form.cleaned_data['selections'] = form.instance.selections

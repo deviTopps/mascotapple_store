@@ -25,7 +25,8 @@ class VariantPriceInline(admin.TabularInline):
     form = VariantPriceForm
     formset = VariantPriceFormSet
     extra = 0
-    verbose_name_plural = 'Variant prices (optional — other configurations use the base price)'
+    fields = ['product_size', 'price', 'product_color']
+    verbose_name_plural = 'Size prices (optional color override)'
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -63,6 +64,13 @@ class ProductAdmin(admin.ModelAdmin):
                 ProductOption.objects.update_or_create(product=form.instance, key=key, defaults={'label': label, 'values': values, 'position': position})
             else:
                 form.instance.options.filter(key=key).delete()
+        # A size entered in a price row becomes a selectable storefront option.
+        for key, label in [('storage', 'Storage'), ('size', 'Size')]:
+            sizes = list(dict.fromkeys(v.selections[key] for v in form.instance.variant_prices.all() if key in v.selections))
+            if sizes:
+                option, _ = ProductOption.objects.get_or_create(product=form.instance, key=key, defaults={'label': label, 'values': '', 'position': 0})
+                option.values = '\n'.join(dict.fromkeys(option.value_list() + sizes))
+                option.save(update_fields=['values'])
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
