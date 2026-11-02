@@ -88,8 +88,12 @@ export default function Home() {
       </div>
       <div className={headerStyles.spacer} aria-hidden="true" />
       <section className="hero-section" id="top" aria-labelledby="hero-heading">
-        <div className="hero-copy"><h1 id="hero-heading">Your everyday.<br /><span className="hero-accent">Upgraded.</span></h1><p className="hero-subtitle">Discover Apple devices for the way you work, create, and unwind.</p><div className="hero-actions"><Link className="primary-button" href="/products">Shop all products <ArrowRight size={16} /></Link></div></div>
-        <HeroSlider />
+        <div className="hero-copy">
+          <h1 id="hero-heading">Extraordinary devices.<br /><span className="hero-accent">Everyday possibilities.</span></h1>
+          <p className="hero-subtitle">For the things you love. And everything you’ll do next.</p>
+          <div className="hero-actions"><Link className="primary-button" href="/products">Shop the collection <ArrowRight size={16} aria-hidden="true" /></Link></div>
+        </div>
+        <div className="hero-showcase"><HeroSlider /></div>
       </section>
       <section className={`${cardStyles.section} ${cardStyles.compactShop}`} id="latest" aria-labelledby="latest-heading">
         <div className={cardStyles.heading}>

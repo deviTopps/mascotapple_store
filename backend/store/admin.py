@@ -3,6 +3,8 @@ from django.db import transaction
 from django.utils import timezone
 from django.urls import reverse
 from django.utils.html import format_html
+from .iphone_colors import iphone_colors
+from django.utils.html import format_html_join
 from .forms import ProductAdminForm, OtherOptionForm, VariantPriceForm, VariantPriceFormSet
 from .models import Category, Product, ProductOption, ProductVariantPrice, Order, OrderItem
 admin.site.site_header = 'Mascot Store Administration'
@@ -34,7 +36,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ['price', 'is_active', 'sort_order']
     search_fields = ['name', 'slug']
     prepopulated_fields = {'slug': ('name',)}
-    readonly_fields = ['updated_at']
+    readonly_fields = ['updated_at', 'color_reference']
     inlines = [OptionInline, VariantPriceInline]
     save_on_top = True
 
@@ -42,7 +44,13 @@ class ProductAdmin(admin.ModelAdmin):
     def edit_product(self, obj):
         return format_html('<a href="{}" aria-label="Edit {}">Edit product</a>', reverse('admin:store_product_change', args=[obj.pk]), obj.name)
 
-    fieldsets = [('Product', {'fields': ('name','slug','category','price','tag','is_active','sort_order')}), ('Product variants', {'fields': ('product_color', 'storage_size')}), ('Description', {'fields': ('description','long_description','highlights')}), ('Images and appearance', {'fields': ('image','image_2','image_3','image_4','image_path','image_alt','visual','tone')}), ('Record', {'fields': ('updated_at',)})]
+    fieldsets = [('Product', {'fields': ('name','slug','category','price','tag','is_active','sort_order')}), ('Product variants', {'fields': ('product_color', 'color_reference', 'storage_size')}), ('Description', {'fields': ('description','long_description','highlights')}), ('Images and appearance', {'fields': ('image','image_2','image_3','image_4','image_path','color_image_positions','image_alt','visual','tone')}), ('Record', {'fields': ('updated_at',)})]
+
+    @admin.display(description='Model color codes')
+    def color_reference(self, obj):
+        colors = iphone_colors(obj.name) if obj else []
+        if not colors: return 'Save an iPhone model name to show its color reference.'
+        return format_html_join('', '<div style="display:flex;align-items:center;gap:8px;margin:6px 0"><span style="display:inline-block;width:20px;height:20px;border:1px solid #888;border-radius:50%;background:{}"></span><span>{} — {}</span></div>', ((c['hex'], c['name'], c['hex']) for c in colors))
 
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)

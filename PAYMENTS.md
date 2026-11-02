@@ -29,7 +29,7 @@ With a configured Paystack test key, use Paystack's test payment instructions to
 
 ## Current scope
 
-Payment records are in Paystack; pending orders and verified test payments are also recorded in the Django database when DJANGO_API_URL is configured. Manage fulfillment status at the Django admin. Automated fulfillment and merchant notifications are not implemented. Only the most recently started checkout session can be verified in the same browser (24-hour expiry); payment records remain available in Paystack independently of browser return. The catalog contains “From” prices; confirm final variant prices before enabling any future live-payment flow.
+Payment records are in Paystack; pending orders and verified test payments are also recorded in the Django database when DJANGO_API_URL is configured. Manage fulfillment status at the Django admin. Automated fulfillment and merchant notifications are not implemented. Each checkout has its own signed browser cookie (24-hour expiry), so multiple checkout attempts do not overwrite each other. The return page also reconciles successful payments by verifying the reference with Paystack and matching the stored Django order. Without the matching browser cookie, it shows only generic payment status and does not reveal the amount or clear the cart. The catalog contains “From” prices; confirm final variant prices before enabling any future live-payment flow.
 
 Official API reference: https://paystack.com/docs/api/transaction/
 Test payment guide: https://paystack.com/docs/payments/test-payments/
@@ -38,7 +38,7 @@ Test payment guide: https://paystack.com/docs/payments/test-payments/
 
 Django product option groups now supply the storefront with stable IDs, labels and allowed values. `app/lib/product-options.ts` remains the standalone starter fallback when the backend is not configured. The selectors are shared by product details and cart editing. Phone, Mac and iPad fixtures include storage and color; Watch uses case size and color, and AirPods uses color only.
 
-Selections form part of cart line identity, are validated on the server and are included in Paystack order metadata. Prices stay at the base catalog test price for all placeholder configurations. Existing cart items without selections remain visible but require options before checkout. Django validates the selected options and base price. Inventory and variant-specific prices are still required before a future live-payment rollout.
+Selections form part of cart line identity, are validated on the server and are included in Paystack order metadata. Prices stay at the base catalog test price for all placeholder configurations. Existing cart items without selections remain visible but require options before checkout. Django validates the selected options and base price. Django variant prices are supported; confirm all production prices and inventory handling before a future live-payment rollout.
 
 ## Google delivery location search
 
@@ -57,3 +57,15 @@ Google widget documentation: https://developers.google.com/maps/documentation/ja
 Checkout now defaults to paying when the customer receives the order. It works without a Paystack key but requires the Django service and internal API token. The server validates prices and options, persists the order, and returns a confirmation reference before purchased items are removed from the cart. Delivery orders require an address; pickup orders display “Pay at pickup.” Items without a price still require a quote.
 
 These are actual unpaid order requests, not Paystack test transactions. Django records payment method `cod`, pending payment and new fulfillment status. The confirmation explicitly shows the amount still due. No online payment is claimed or collected. Retrying the same request ID and unchanged order returns the existing order instead of creating a duplicate. Paystack remains restricted to test mode.
+
+## Test service setup
+
+1. In the project root `.env.local`, set `PAYSTACK_SECRET_KEY` to your Paystack **test secret** (`sk_test_…`). Keep it server-only. The current local callback origin is `SITE_URL=http://localhost:3002`.
+2. Run `npm run check:payments`. It checks configuration without printing keys; it does not validate credentials with Paystack or submit a payment.
+3. Restart the Next.js service after changing configuration. Keep Django running at `http://127.0.0.1:8000`; local catalog, variant prices, quantities and orders use this backend.
+4. To receive asynchronous confirmations, deploy the Next.js service to a public HTTPS test URL (with the same test key and accessible Django backend). In Paystack's **test** environment, configure the webhook URL as `https://YOUR-TEST-SITE/api/paystack/webhook`. A localhost URL cannot receive Paystack webhooks. Set `SITE_URL` to that public origin too. Do not expose the local admin through a tunnel as part of this setup.
+5. Test hosted checkout success, cancellation, failed payment, browser closure, duplicate webhook delivery and mismatched amounts. No real-money transaction is needed.
+
+The webhook verifies the HMAC-SHA512 signature against the raw request bytes, re-verifies the reference with Paystack, and accepts only successful GHS test transactions tagged for this store. Django compares the verified amount to the stored order and marks repeated confirmations idempotently. Failed verification/storage returns a non-success status for retry. The browser return continues to verify and record payments independently.
+
+Setup remains incomplete until a valid test key is installed and a hosted test transaction succeeds. Webhook delivery additionally requires the public HTTPS URL and Paystack dashboard configuration. Live keys remain rejected.

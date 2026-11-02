@@ -21,3 +21,5 @@ backend/staticfiles/
 deploy/backups/
 playwright-report/
 test-results/
+
+backend/db.before-*.sqlite3

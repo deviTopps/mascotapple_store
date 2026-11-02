@@ -1,0 +1,762 @@
+{
+  "iPhone Duo": [
+    {
+      "name": "Night Sky",
+      "hex": "#3C4042"
+    },
+    {
+      "name": "Star White",
+      "hex": "#FAFAFA"
+    }
+  ],
+  "iPhone 18 Pro Max": [
+    {
+      "name": "Burgundy",
+      "hex": "#4D1821"
+    },
+    {
+      "name": "Glacier",
+      "hex": "#E8F2FF"
+    },
+    {
+      "name": "Black",
+      "hex": "#3C3C3C"
+    },
+    {
+      "name": "Silver",
+      "hex": "#F7F7F7"
+    }
+  ],
+  "iPhone 18 Pro": [
+    {
+      "name": "Burgundy",
+      "hex": "#4D1821"
+    },
+    {
+      "name": "Glacier",
+      "hex": "#E8F2FF"
+    },
+    {
+      "name": "Black",
+      "hex": "#3C3C3C"
+    },
+    {
+      "name": "Silver",
+      "hex": "#F7F7F7"
+    }
+  ],
+  "iPhone 17e": [
+    {
+      "name": "Soft Pink",
+      "hex": "#FCE7E6"
+    },
+    {
+      "name": "Black",
+      "hex": "#3C4042"
+    },
+    {
+      "name": "White",
+      "hex": "#FAFAFA"
+    }
+  ],
+  "iPhone 17 Pro Max": [
+    {
+      "name": "Deep Blue",
+      "hex": "#32374A"
+    },
+    {
+      "name": "Cosmic Orange",
+      "hex": "#F77E2D"
+    },
+    {
+      "name": "Silver",
+      "hex": "#F5F5F5"
+    }
+  ],
+  "iPhone 17 Pro": [
+    {
+      "name": "Deep Blue",
+      "hex": "#32374A"
+    },
+    {
+      "name": "Cosmic Orange",
+      "hex": "#F77E2D"
+    },
+    {
+      "name": "Silver",
+      "hex": "#F5F5F5"
+    }
+  ],
+  "iPhone Air": [
+    {
+      "name": "Sky Blue",
+      "hex": "#F0F9FF"
+    },
+    {
+      "name": "Light Gold",
+      "hex": "#FFFCF5"
+    },
+    {
+      "name": "Space Black",
+      "hex": "#000000"
+    },
+    {
+      "name": "Cloud White",
+      "hex": "#FCFCFC"
+    }
+  ],
+  "iPhone 17": [
+    {
+      "name": "Lavender",
+      "hex": "#DFCEEA"
+    },
+    {
+      "name": "Mist Blue",
+      "hex": "#96AED1"
+    },
+    {
+      "name": "Sage",
+      "hex": "#A9B689"
+    },
+    {
+      "name": "Black",
+      "hex": "#353839"
+    },
+    {
+      "name": "White",
+      "hex": "#F5F5F5"
+    }
+  ],
+  "iPhone 16e": [
+    {
+      "name": "Black",
+      "hex": "#3C4042"
+    },
+    {
+      "name": "White",
+      "hex": "#FAFAFA"
+    }
+  ],
+  "iPhone 16 Pro Max": [
+    {
+      "name": "Natural Titanium",
+      "hex": "#C2BCB2"
+    },
+    {
+      "name": "Desert Titanium",
+      "hex": "#BFA48F"
+    },
+    {
+      "name": "Black Titanium",
+      "hex": "#3C3C3D"
+    },
+    {
+      "name": "White Titanium",
+      "hex": "#F2F1ED"
+    }
+  ],
+  "iPhone 16 Pro": [
+    {
+      "name": "Natural Titanium",
+      "hex": "#C2BCB2"
+    },
+    {
+      "name": "Desert Titanium",
+      "hex": "#BFA48F"
+    },
+    {
+      "name": "Black Titanium",
+      "hex": "#3C3C3D"
+    },
+    {
+      "name": "White Titanium",
+      "hex": "#F2F1ED"
+    }
+  ],
+  "iPhone 16 Plus": [
+    {
+      "name": "Pink",
+      "hex": "#F2ADDA"
+    },
+    {
+      "name": "Ultramarine",
+      "hex": "#9AADF6"
+    },
+    {
+      "name": "Teal",
+      "hex": "#B0D4D2"
+    },
+    {
+      "name": "Black",
+      "hex": "#3C4042"
+    },
+    {
+      "name": "White",
+      "hex": "#FAFAFA"
+    }
+  ],
+  "iPhone 16": [
+    {
+      "name": "Pink",
+      "hex": "#F2ADDA"
+    },
+    {
+      "name": "Ultramarine",
+      "hex": "#9AADF6"
+    },
+    {
+      "name": "Teal",
+      "hex": "#B0D4D2"
+    },
+    {
+      "name": "Black",
+      "hex": "#3C4042"
+    },
+    {
+      "name": "White",
+      "hex": "#FAFAFA"
+    }
+  ],
+  "iPhone 15 Pro Max": [
+    {
+      "name": "Blue Titanium",
+      "hex": "#2F4452"
+    },
+    {
+      "name": "Natural Titanium",
+      "hex": "#837F7D"
+    },
+    {
+      "name": "Black Titanium",
+      "hex": "#1B1B1B"
+    },
+    {
+      "name": "White Titanium",
+      "hex": "#DDDDDD"
+    }
+  ],
+  "iPhone 15 Pro": [
+    {
+      "name": "Blue Titanium",
+      "hex": "#2F4452"
+    },
+    {
+      "name": "Natural Titanium",
+      "hex": "#837F7D"
+    },
+    {
+      "name": "Black Titanium",
+      "hex": "#1B1B1B"
+    },
+    {
+      "name": "White Titanium",
+      "hex": "#DDDDDD"
+    }
+  ],
+  "iPhone 15 Plus": [
+    {
+      "name": "Pink",
+      "hex": "#E3C8CA"
+    },
+    {
+      "name": "Blue",
+      "hex": "#CED5D9"
+    },
+    {
+      "name": "Green",
+      "hex": "#CAD4C5"
+    },
+    {
+      "name": "Yellow",
+      "hex": "#E5E0C1"
+    },
+    {
+      "name": "Black",
+      "hex": "#35393B"
+    }
+  ],
+  "iPhone 15": [
+    {
+      "name": "Pink",
+      "hex": "#E3C8CA"
+    },
+    {
+      "name": "Blue",
+      "hex": "#CED5D9"
+    },
+    {
+      "name": "Green",
+      "hex": "#CAD4C5"
+    },
+    {
+      "name": "Yellow",
+      "hex": "#E5E0C1"
+    },
+    {
+      "name": "Black",
+      "hex": "#35393B"
+    }
+  ],
+  "iPhone 14 Pro Max": [
+    {
+      "name": "Deep Purple",
+      "hex": "#594F63"
+    },
+    {
+      "name": "Space Black",
+      "hex": "#403E3D"
+    },
+    {
+      "name": "Silver",
+      "hex": "#F0F2F2"
+    },
+    {
+      "name": "Gold",
+      "hex": "#F4E8CE"
+    }
+  ],
+  "iPhone 14 Pro": [
+    {
+      "name": "Deep Purple",
+      "hex": "#594F63"
+    },
+    {
+      "name": "Space Black",
+      "hex": "#403E3D"
+    },
+    {
+      "name": "Silver",
+      "hex": "#F0F2F2"
+    },
+    {
+      "name": "Gold",
+      "hex": "#F4E8CE"
+    }
+  ],
+  "iPhone 14 Plus": [
+    {
+      "name": "Purple",
+      "hex": "#E6DDEB"
+    },
+    {
+      "name": "Blue",
+      "hex": "#A0B4C7"
+    },
+    {
+      "name": "Yellow",
+      "hex": "#F9E479"
+    },
+    {
+      "name": "Midnight",
+      "hex": "#222930"
+    },
+    {
+      "name": "Starlight",
+      "hex": "#FAF6F2"
+    },
+    {
+      "name": "(PRODUCT)RED",
+      "hex": "#FC0324"
+    }
+  ],
+  "iPhone 14": [
+    {
+      "name": "Purple",
+      "hex": "#E6DDEB"
+    },
+    {
+      "name": "Blue",
+      "hex": "#A0B4C7"
+    },
+    {
+      "name": "Yellow",
+      "hex": "#F9E479"
+    },
+    {
+      "name": "Midnight",
+      "hex": "#222930"
+    },
+    {
+      "name": "Starlight",
+      "hex": "#FAF6F2"
+    },
+    {
+      "name": "(PRODUCT)RED",
+      "hex": "#FC0324"
+    }
+  ],
+  "iPhone SE (3rd generation)": [
+    {
+      "name": "Midnight",
+      "hex": "#232A31"
+    },
+    {
+      "name": "Starlight",
+      "hex": "#FAF6F2"
+    },
+    {
+      "name": "(PRODUCT)RED",
+      "hex": "#BF0013"
+    }
+  ],
+  "iPhone 13 Pro Max": [
+    {
+      "name": "Sierra Blue",
+      "hex": "#A7C1D9"
+    },
+    {
+      "name": "Alpine Green",
+      "hex": "#576856"
+    },
+    {
+      "name": "Graphite",
+      "hex": "#54524F"
+    },
+    {
+      "name": "Silver",
+      "hex": "#F1F2ED"
+    },
+    {
+      "name": "Gold",
+      "hex": "#FAE7CF"
+    }
+  ],
+  "iPhone 13 Pro": [
+    {
+      "name": "Sierra Blue",
+      "hex": "#A7C1D9"
+    },
+    {
+      "name": "Alpine Green",
+      "hex": "#576856"
+    },
+    {
+      "name": "Graphite",
+      "hex": "#54524F"
+    },
+    {
+      "name": "Silver",
+      "hex": "#F1F2ED"
+    },
+    {
+      "name": "Gold",
+      "hex": "#FAE7CF"
+    }
+  ],
+  "iPhone 13 mini": [
+    {
+      "name": "Blue",
+      "hex": "#276787"
+    },
+    {
+      "name": "Green",
+      "hex": "#394C38"
+    },
+    {
+      "name": "Pink",
+      "hex": "#FADDD7"
+    },
+    {
+      "name": "Midnight",
+      "hex": "#232A31"
+    },
+    {
+      "name": "Starlight",
+      "hex": "#FAF6F2"
+    },
+    {
+      "name": "(PRODUCT)RED",
+      "hex": "#BF0013"
+    }
+  ],
+  "iPhone 13": [
+    {
+      "name": "Blue",
+      "hex": "#276787"
+    },
+    {
+      "name": "Green",
+      "hex": "#394C38"
+    },
+    {
+      "name": "Pink",
+      "hex": "#FADDD7"
+    },
+    {
+      "name": "Midnight",
+      "hex": "#232A31"
+    },
+    {
+      "name": "Starlight",
+      "hex": "#FAF6F2"
+    },
+    {
+      "name": "(PRODUCT)RED",
+      "hex": "#BF0013"
+    }
+  ],
+  "iPhone 12 Pro Max": [
+    {
+      "name": "Pacific Blue",
+      "hex": "#2D4E5C"
+    },
+    {
+      "name": "Graphite",
+      "hex": "#52514D"
+    },
+    {
+      "name": "Silver",
+      "hex": "#E3E4DF"
+    },
+    {
+      "name": "Gold",
+      "hex": "#FCEBD3"
+    }
+  ],
+  "iPhone 12 Pro": [
+    {
+      "name": "Pacific Blue",
+      "hex": "#2D4E5C"
+    },
+    {
+      "name": "Graphite",
+      "hex": "#52514D"
+    },
+    {
+      "name": "Silver",
+      "hex": "#E3E4DF"
+    },
+    {
+      "name": "Gold",
+      "hex": "#FCEBD3"
+    }
+  ],
+  "iPhone 12 mini": [
+    {
+      "name": "Purple",
+      "hex": "#B7AFE6"
+    },
+    {
+      "name": "Blue",
+      "hex": "#023B63"
+    },
+    {
+      "name": "Green",
+      "hex": "#D8EFD5"
+    },
+    {
+      "name": "Black",
+      "hex": "#25212B"
+    },
+    {
+      "name": "White",
+      "hex": "#F6F2EF"
+    },
+    {
+      "name": "(PRODUCT)RED",
+      "hex": "#D82E2E"
+    }
+  ],
+  "iPhone 12": [
+    {
+      "name": "Purple",
+      "hex": "#B7AFE6"
+    },
+    {
+      "name": "Blue",
+      "hex": "#023B63"
+    },
+    {
+      "name": "Green",
+      "hex": "#D8EFD5"
+    },
+    {
+      "name": "Black",
+      "hex": "#25212B"
+    },
+    {
+      "name": "White",
+      "hex": "#F6F2EF"
+    },
+    {
+      "name": "(PRODUCT)RED",
+      "hex": "#D82E2E"
+    }
+  ],
+  "iPhone SE (2nd generation)": [
+    {
+      "name": "Black",
+      "hex": "#262529"
+    },
+    {
+      "name": "White",
+      "hex": "#F3F3F3"
+    },
+    {
+      "name": "(PRODUCT)RED",
+      "hex": "#B41325"
+    }
+  ],
+  "iPhone 11 Pro Max": [
+    {
+      "name": "Midnight Green",
+      "hex": "#4E5851"
+    },
+    {
+      "name": "Space Gray",
+      "hex": "#535150"
+    },
+    {
+      "name": "Silver",
+      "hex": "#EBEBE3"
+    },
+    {
+      "name": "Gold",
+      "hex": "#FAD7BD"
+    }
+  ],
+  "iPhone 11 Pro": [
+    {
+      "name": "Midnight Green",
+      "hex": "#4E5851"
+    },
+    {
+      "name": "Space Gray",
+      "hex": "#535150"
+    },
+    {
+      "name": "Silver",
+      "hex": "#EBEBE3"
+    },
+    {
+      "name": "Gold",
+      "hex": "#FAD7BD"
+    }
+  ],
+  "iPhone 11": [
+    {
+      "name": "Purple",
+      "hex": "#D1CDDA"
+    },
+    {
+      "name": "Green",
+      "hex": "#AEE1CD"
+    },
+    {
+      "name": "Yellow",
+      "hex": "#FFE681"
+    },
+    {
+      "name": "Black",
+      "hex": "#1F2020"
+    },
+    {
+      "name": "White",
+      "hex": "#F9F6EF"
+    },
+    {
+      "name": "(PRODUCT)RED",
+      "hex": "#BA0C2E"
+    }
+  ],
+  "iPhone XR": [
+    {
+      "name": "Blue",
+      "hex": "#48AEE6"
+    },
+    {
+      "name": "Yellow",
+      "hex": "#F9D045"
+    },
+    {
+      "name": "Coral",
+      "hex": "#FF6E5A"
+    },
+    {
+      "name": "Black",
+      "hex": "#2E3034"
+    },
+    {
+      "name": "White",
+      "hex": "#F3F3F3"
+    },
+    {
+      "name": "(PRODUCT)RED",
+      "hex": "#B41325"
+    }
+  ],
+  "iPhone XS Max": [
+    {
+      "name": "Space Gray",
+      "hex": "#262529"
+    },
+    {
+      "name": "Silver",
+      "hex": "#E4E4E2"
+    },
+    {
+      "name": "Gold",
+      "hex": "#FADCC2"
+    }
+  ],
+  "iPhone XS": [
+    {
+      "name": "Space Gray",
+      "hex": "#262529"
+    },
+    {
+      "name": "Silver",
+      "hex": "#E4E4E2"
+    },
+    {
+      "name": "Gold",
+      "hex": "#FADCC2"
+    }
+  ],
+  "iPhone X": [
+    {
+      "name": "Space Gray",
+      "hex": "#262529"
+    },
+    {
+      "name": "Silver",
+      "hex": "#E4E4E2"
+    }
+  ],
+  "iPhone 8 Plus": [
+    {
+      "name": "Space Gray",
+      "hex": "#272729"
+    },
+    {
+      "name": "Silver",
+      "hex": "#E2E3E4"
+    },
+    {
+      "name": "Gold",
+      "hex": "#F7E8DD"
+    },
+    {
+      "name": "(PRODUCT)RED",
+      "hex": "#960111"
+    }
+  ],
+  "iPhone 8": [
+    {
+      "name": "Space Gray",
+      "hex": "#272729"
+    },
+    {
+      "name": "Silver",
+      "hex": "#E2E3E4"
+    },
+    {
+      "name": "Gold",
+      "hex": "#F7E8DD"
+    },
+    {
+      "name": "(PRODUCT)RED",
+      "hex": "#960111"
+    }
+  ]
+}

@@ -15,7 +15,7 @@ export default function CheckoutForm({ configured }: { configured: boolean }) {
   const products = useCatalog();
   const { items, ready } = useCart();
   const [requestedDelivery, setDelivery] = useState("pickup");
-  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [paymentMethod, setPaymentMethod] = useState(configured ? "paystack" : "cod");
   const [receipt, setReceipt] = useState<{ reference: string; amount: number; delivery: string } | null>(null);
   const attempt = useRef<{ payload: string; id: string } | null>(null);
   const [busy, setBusy] = useState(false);

@@ -12,7 +12,8 @@
     "lint": "eslint",
     "test": "node --test tests/*.test.cjs",
     "typecheck": "tsc --noEmit",
-    "test:browser": "playwright test"
+    "test:browser": "playwright test",
+    "check:payments": "node scripts/check-paystack.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.48.0",

@@ -48,15 +48,16 @@ export function useCart() {
   return {
     ready, items,
     count: items.reduce((sum, item) => sum + item.quantity, 0),
-    add(slug: string, selections: Selections) {
+    add(slug: string, selections: Selections, quantity = 1) {
+      if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) return false;
       if (!products.some(p => p.slug === slug) || !validSelections(slug, selections, products)) return false;
       const current = parse(snapshot());
-      const incoming = { slug, selections, quantity: 1 };
+      const incoming = { slug, selections, quantity };
       const id = cartLineKey(incoming);
       const existing = current.find(item => cartLineKey(item) === id);
       if (!existing && current.length >= 100) return false;
-      if (existing && existing.quantity >= 99) return false;
-      save(existing ? current.map(item => cartLineKey(item) === id ? { ...item, quantity: item.quantity + 1 } : item) : [...current, incoming]);
+      if (existing && existing.quantity + quantity > 99) return false;
+      save(existing ? current.map(item => cartLineKey(item) === id ? { ...item, quantity: item.quantity + quantity } : item) : [...current, incoming]);
       return true;
     },
     setQuantity(id: string, quantity: number) {

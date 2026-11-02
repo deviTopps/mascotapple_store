@@ -99,3 +99,13 @@
 @keyframes checkout-success-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes checkout-success-pop { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) { .checkout-success-icon, .checkout-success-ring, .checkout-success-check { animation: none; } }
+
+/* Compact payment confirmation and retry states. */
+.commerce-page .commerce-main .payment-result { max-width: 480px; margin: 12px auto; padding: 28px 24px; gap: 12px; border: 0; border-radius: 16px; background: #fff; }
+.commerce-page .commerce-main .payment-result :is(h1, h2) { font-size: clamp(24px, 3vw, 30px); line-height: 1.15; margin: 0; letter-spacing: -.035em; }
+.commerce-page .commerce-main .payment-result p { max-width: 360px; font-size: 13px; line-height: 1.6; margin: 0; }
+.commerce-page .commerce-main .payment-result .commerce-eyebrow { font-size: 9px; letter-spacing: .14em; }
+.commerce-page .commerce-main .payment-result .checkout-success-icon { width: 52px; height: 52px; margin-bottom: 2px; }
+.commerce-page .commerce-main .payment-result .commerce-button { font-size: 13px; min-height: 44px; padding: 12px 22px; margin-top: 6px; }
+.commerce-page .commerce-main .payment-result > a:not(.commerce-button) { font-size: 12px; }
+@media (max-width: 540px) { .commerce-page .commerce-main .payment-result { margin: 0 auto; padding: 24px 18px; } }

@@ -21,6 +21,7 @@ class Product(models.Model):
     image_2 = models.ImageField(upload_to='products/', blank=True, verbose_name='Image 2')
     image_3 = models.ImageField(upload_to='products/', blank=True, verbose_name='Image 3')
     image_4 = models.ImageField(upload_to='products/', blank=True, verbose_name='Image 4')
+    color_image_positions = models.JSONField(default=dict, blank=True, help_text='Map color names to gallery positions (1–4), e.g. {"Silver": 2, "Cosmic Orange": 3, "Deep Blue": 4}.')
     image_path = models.CharField(max_length=300, blank=True, help_text='Existing storefront image path, e.g. /products/photo.webp. Upload takes priority.')
     image_alt = models.CharField(max_length=300, blank=True)
     highlights = models.TextField(blank=True, help_text='One highlight per line.')
@@ -32,6 +33,9 @@ class Product(models.Model):
     class Meta: ordering = ['sort_order', 'id']
     def __str__(self): return self.name
     def clean(self):
+        mapping = self.color_image_positions
+        if not isinstance(mapping, dict) or any(not isinstance(k, str) or not k.strip() or type(v) is not int or not 1 <= v <= 4 for k, v in mapping.items()):
+            raise ValidationError({'color_image_positions': 'Use a JSON object mapping color names to gallery positions from 1 to 4.'})
         if self.image_path and (not self.image_path.startswith('/') or self.image_path.startswith('//') or '..' in self.image_path):
             raise ValidationError({'image_path': 'Use a local storefront path starting with /.'})
 

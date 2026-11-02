@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     });
     const url = new URL(result.authorization_url);
     if (url.protocol !== "https:" || url.hostname !== "checkout.paystack.com") throw new Error("Unexpected payment URL.");
-    (await cookies()).set("mascot-payment", signSession(session, secret), { httpOnly: true, secure: origin.startsWith("https:"), sameSite: "lax", maxAge: 86400, path: "/" });
+    (await cookies()).set(`mascot-payment-${reference}`, signSession(session, secret), { httpOnly: true, secure: origin.startsWith("https:"), sameSite: "lax", maxAge: 86400, path: "/" });
     return Response.json({ url: url.href }, { headers: { "Cache-Control": "no-store" } });
   } catch {
     return Response.json({ error: "Unable to open Paystack. Please try again shortly." }, { status: 502 });

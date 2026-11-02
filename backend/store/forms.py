@@ -1,5 +1,6 @@
 from django import forms
 from pathlib import Path
+from .iphone_colors import iphone_colors
 from .models import Product, ProductOption, ProductVariantPrice
 
 class ProductAdminForm(forms.ModelForm):
@@ -25,7 +26,7 @@ class ProductAdminForm(forms.ModelForm):
             raise forms.ValidationError('Upload an image with at most 20 megapixels.')
         return image
 
-    product_color = forms.CharField(label='Product Color', required=False, widget=forms.Textarea(attrs={'rows': 3, 'cols': 45, 'placeholder': 'Black\nBlue\nSilver'}), help_text='Enter one color per line. Leave empty if color selection is not needed.')
+    product_color = forms.CharField(label='Product Color', required=False, widget=forms.Textarea(attrs={'rows': 3, 'cols': 45, 'placeholder': 'Black\nBlue\nSilver'}), help_text='Enter one color name per line using the model color reference below. Hex codes are applied automatically to the website finish preview. Leave empty if color selection is not needed.')
     storage_size = forms.CharField(label='Storage Size', required=False, widget=forms.Textarea(attrs={'rows': 3, 'cols': 45, 'placeholder': '128 GB\n256 GB\n512 GB'}), help_text='Enter one storage size per line. Leave empty for products without storage options.')
     class Meta:
         model = Product
@@ -37,6 +38,8 @@ class ProductAdminForm(forms.ModelForm):
             options = {option.key: option.values for option in self.instance.options.filter(key__in=['color', 'storage'])}
             self.initial['product_color'] = options.get('color', '')
             self.initial['storage_size'] = options.get('storage', '')
+        if not self.initial.get('product_color'):
+            self.initial['product_color'] = '\n'.join(c['name'] for c in iphone_colors(self.instance.name))
 
     def clean_product_color(self):
         return self.normalize(self.cleaned_data['product_color'])
@@ -106,8 +109,24 @@ class VariantPriceFormSet(forms.BaseInlineFormSet):
         for form in self.forms:
             if not form.cleaned_data or form.cleaned_data.get('DELETE'): continue
             selections = form.cleaned_data.get('selections', {})
-            if set(selections) != set(options) or any(value not in options.get(key, []) for key, value in selections.items()):
-                raise forms.ValidationError('Each variant price must include every product option, with values matching the options above.')
+            problems = []
+            for key in sorted(set(options) - set(selections)):
+                problems.append(f'Missing {key}. Add {key}= followed by one of: {", ".join(options[key])}.')
+            for key in sorted(set(selections) - set(options)):
+                field = {'storage': 'Storage Size', 'color': 'Product Color'}.get(key, 'Other product options')
+                problems.append(f'{key} is not configured. Add {selections[key]} to {field} above, or remove {key}= from this row.')
+            for key in sorted(set(selections) & set(options)):
+                # Case differences are harmless; use the configured spelling in orders.
+                matched = next((value for value in options[key] if value.casefold() == selections[key].casefold()), None)
+                if matched is None:
+                    problems.append(f'{key}={selections[key]} is not allowed. Choose one of: {", ".join(options[key])}.')
+                else:
+                    selections[key] = matched
+            if problems:
+                form.add_error('selections', problems)
+                continue
+            form.cleaned_data['selections'] = dict(sorted(selections.items()))
+            form.instance.selections = form.cleaned_data['selections']
             identity = tuple(sorted(selections.items()))
             if identity in seen: raise forms.ValidationError('Only one price is allowed per configuration.')
             seen.add(identity)

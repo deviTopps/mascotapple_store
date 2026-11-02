@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import { Pause, Play } from "lucide-react";
 import imacImage from "../public/hero/image1-transparent.png";
 import headphonesImage from "../public/hero/image0-transparent.png";
 import iphonesImage from "../public/hero/image23-transparent.png";
@@ -76,7 +76,7 @@ export default function HeroSlider() {
           <div key={slide.label} className={`hero-slide ${slide.className ?? ""} ${index === active ? "is-active" : ""}`}
             role="group" aria-roledescription="slide" aria-label={`${index + 1} of ${slides.length}`} aria-hidden={index !== active}>
             {(index === active || requested.includes(index)) && <Image className="hero-image" src={slide.src} alt={slide.alt} fill
-              sizes="(max-width: 760px) calc(100vw - 40px), 58vw" placeholder="blur"
+              sizes="(max-width: 760px) calc(100vw - 40px), 960px" placeholder="blur"
               loading="eager" fetchPriority={index === active ? "high" : "low"}
               onLoad={() => setLoaded((previous) => previous.includes(index) ? previous : [...previous, index])} />}
           </div>
@@ -85,12 +85,10 @@ export default function HeroSlider() {
       <div className="hero-slider-footer">
         <p className="hero-slide-caption"><span className="hero-slide-number">{String(active + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}</span>{slides[active].label}</p>
         <div className="hero-slider-controls">
-        <button type="button" aria-label="Previous image" onClick={() => selectSlide(active - 1)}><ChevronLeft size={17} /></button>
         <div className="hero-slider-dots">
           {slides.map((slide, index) => <button type="button" key={slide.label} aria-label={`Show image ${index + 1}: ${slide.alt}`}
             aria-current={index === active ? "true" : undefined} onClick={() => selectSlide(index)}><span /></button>)}
         </div>
-        <button type="button" aria-label="Next image" onClick={() => selectSlide(active + 1)}><ChevronRight size={17} /></button>
         {!reducedMotion && <button type="button" aria-label={paused ? "Play slideshow" : "Pause slideshow"}
           onClick={() => setPaused((value) => !value)}>{paused ? <Play size={14} /> : <Pause size={14} />}</button>}
         </div>

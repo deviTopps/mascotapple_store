@@ -3,8 +3,8 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  min-height: 34px;
-  padding: 8px 16px;
+  min-height: 30px;
+  padding: 6px 16px;
   background: #0076a5;
   color: #f4f6f2;
   font-size: 12px;
@@ -14,11 +14,11 @@
 }
 
 .header { position: relative; z-index: 10; background: #fff; border-bottom: 1px solid #e8ebe6; }
-.inner { max-width: 1440px; margin: auto; padding: 0 clamp(24px, 4vw, 64px); display: flex; align-items: center; justify-content: space-between; gap: 32px; min-height: 128px; }
+.inner { max-width: 1440px; margin: auto; padding: 0 clamp(24px, 4vw, 64px); display: flex; align-items: center; justify-content: space-between; gap: 32px; min-height: 80px; }
 .brand { display: inline-flex; flex-shrink: 0; }
-.brand img { display: block; width: 120px; height: 120px; object-fit: contain; }
+.brand img { display: block; width: 72px; height: 72px; object-fit: contain; }
 .navigation { display: flex; align-items: center; gap: clamp(16px, 1.7vw, 26px); }
-.navigation a { position: relative; padding: 14px 0; white-space: nowrap; font-size: 16px; color: #686d67; transition: color .2s; }
+.navigation a { position: relative; padding: 14px 0; white-space: nowrap; font-size: 14px; color: #686d67; transition: color .2s; }
 .navigation a:hover, .navigation a.active { color: #0076a5; }
 .navigation a.active { font-weight: 600; }
 .navigation a.active::after { content: ''; position: absolute; bottom: 5px; left: 0; right: 0; height: 2px; border-radius: 2px; background: #0076a5; }
@@ -45,8 +45,8 @@
 }
 
 @media (max-width: 640px) {
-  .inner { min-height: 108px; padding: 0 20px; gap: 12px; }
-  .brand img { width: 100px; height: 100px; }
+  .inner { min-height: 72px; padding: 0 20px; gap: 12px; }
+  .brand img { width: 64px; height: 64px; }
   .actions { gap: 4px; }
   .bag { padding: 0 10px; gap: 7px; }
   .bagLabel { display: none; }
@@ -56,7 +56,7 @@
 }
 
 /* Keep both header rows visible without covering the page. */
-.page { --header-height: 163px; }
+.page { --header-height: 111px; }
 .fixedHeader { position: fixed; inset: 0 0 auto; z-index: 20; }
 .spacer { height: var(--header-height); flex-shrink: 0; }
 .page > section[id] { scroll-margin-top: calc(var(--header-height) + 16px); }
@@ -65,5 +65,5 @@
   .navigation { max-height: calc(100dvh - var(--header-height)); overflow-y: auto; }
 }
 @media (max-width: 640px) {
-  .page { --header-height: 143px; }
+  .page { --header-height: 103px; }
 }

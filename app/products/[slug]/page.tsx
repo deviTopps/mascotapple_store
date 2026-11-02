@@ -6,7 +6,9 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { getStoreProducts } from "../../lib/store-backend";
 import { CartLink } from "../../cart-store";
+import { VariantProvider } from "./variant-context";
 import ProductGallery from "./product-gallery";
+import ProductPrice from "./product-price";
 import ProductActions from "./product-actions";
 import { productStructuredData, serializeJsonLd, storeUrl } from '../../lib/seo';
 import styles from './product-detail.module.css';
@@ -49,15 +51,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <Link href="/products">Shop</Link><span>/</span><Link href={`/products?category=${encodeURIComponent(product.category)}`}>{product.category}</Link><span>/</span><span aria-current="page">{product.name}</span>
         </nav>
 
-        <section className="product-detail">
+        <VariantProvider><section className="product-detail">
           <ProductGallery key={product.slug} product={product} />
 
           <div className="product-detail-copy">
             <p className="eyebrow">{product.category}</p>
             <h1>{product.name}</h1>
-            <p className="product-detail-price">{product.price}</p>
-            <p className="product-detail-description">{product.longDescription || product.description}</p>
+            <ProductPrice product={product} />
             <ProductActions productName={product.name} slug={product.slug} />
+            <details className={styles.description} open>
+              <summary>About this product</summary>
+              <p>{product.longDescription || product.description}</p>
+            </details>
 
             {product.highlights.length > 0 && <div className="product-highlights">
               <h2>Highlights</h2>
@@ -67,7 +72,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </div>}
             <Link className="product-support-link" href="/support">Need a hand? Talk to us <ArrowRight size={14} /></Link>
           </div>
-        </section>
+        </section></VariantProvider>
 
         {similarProducts.length > 0 && <section className={styles.similar} aria-labelledby="similar-heading">
           <div className={styles.sectionHeading}><div><p>KEEP EXPLORING</p><h2 id="similar-heading">Similar products</h2></div><Link href={`/products?category=${encodeURIComponent(product.category)}`}>View all {product.category} <ArrowRight size={15} aria-hidden="true" /></Link></div>
