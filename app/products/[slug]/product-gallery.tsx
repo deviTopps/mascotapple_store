@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { colorImageIndex } from "../../lib/product-color-image";
 import type { Product } from "../../lib/products";
 import { useVariant } from "./variant-context";
 import styles from "./product-gallery.module.css";
@@ -11,12 +12,11 @@ export default function ProductGallery({ product }: { product: Product }) {
   const [manualView, setManualView] = useState({ color: "", index: 0 });
   const { selections } = useVariant();
   const color = selections.color ?? "";
-  const mappedPosition = Object.entries(product.colorImagePositions ?? {}).find(([name]) => name.toLowerCase() === color.toLowerCase())?.[1];
-  const colorIndex = mappedPosition && images[mappedPosition - 1] ? mappedPosition - 1 : 0;
+  const colorIndex = colorImageIndex(product, images, color);
   const selected = manualView.color === color ? manualView.index : colorIndex;
   return <div className={styles.gallery}>
     <div className="product-detail-visual">
-      <Image className="product-detail-image" src={images[selected]} alt={`${product.imageAlt}${mappedPosition && selected === colorIndex ? ` — ${color}` : ""}${selected ? ` — view ${selected + 1}` : ""}`} fill sizes="(max-width: 760px) 90vw, 520px" loading="eager" />
+      <Image className="product-detail-image" src={images[selected]} alt={`${product.imageAlt}${color && selected === colorIndex ? ` — ${color}` : ""}${selected ? ` — view ${selected + 1}` : ""}`} fill sizes="(max-width: 760px) 90vw, 520px" loading="eager" />
       {product.tag && <span className="product-detail-tag">{product.tag}</span>}
     </div>
     {images.length > 1 && <div className={styles.thumbnails} role="group" aria-label="Product images">
