@@ -22,6 +22,7 @@ The build deliberately fails if these settings are missing or malformed. A worki
 
 - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`: enables delivery address search. Restrict the key to your storefront referrers and required Google APIs. Manual address entry works without it.
 - `PAYSTACK_SECRET_KEY`: accepts test keys only. Leave blank to use pay on delivery/pickup without online payments. Live Paystack payments are not implemented.
+- `CHECKOUT_ALLOWED_ORIGINS`: optional comma-separated exact storefront origins for additional domains, such as `https://www.mascotappledealzgh.com,https://mascotappledealzgh.com`. Only list domains serving this store. Checkout returns to the same approved origin used by the customer.
 
 Never use a `NEXT_PUBLIC_` prefix for the backend token or payment secret. Enter credentials in Vercel's environment settings; do not commit `.env.local`. `.env.example` lists the configuration names, and `.vercelignore` excludes local environment files and the backend from frontend uploads.
 

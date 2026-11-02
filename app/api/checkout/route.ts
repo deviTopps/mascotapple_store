@@ -4,11 +4,12 @@ import { cookies } from "next/headers";
 import { validateOrder } from "../../lib/checkout";
 import { paystack, signSession } from "../../lib/paystack";
 import { readOrderBody, RequestBodyError } from "../../lib/request-body";
+import { checkoutOrigin } from "../../lib/checkout-origin";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  const origin = process.env.SITE_URL || new URL(request.url).origin;
-  if (request.headers.get("origin") !== origin) return Response.json({ error: "Invalid checkout origin." }, { status: 403 });
+  const origin = checkoutOrigin(request, process.env.SITE_URL, process.env.CHECKOUT_ALLOWED_ORIGINS);
+  if (!origin) return Response.json({ error: "Invalid checkout origin." }, { status: 403 });
   const secret = process.env.PAYSTACK_SECRET_KEY;
 
   let order;

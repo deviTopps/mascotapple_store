@@ -9,6 +9,16 @@ require.extensions['.ts'] = function(module, filename) {
 };
 const { validateOrder } = require('../app/lib/checkout.ts');
 const { signSession, readSession } = require('../app/lib/paystack.ts');
+const { checkoutOrigin } = require('../app/lib/checkout-origin.ts');
+test('checkout accepts only explicitly configured origins and returns to the matching storefront', () => {
+  const request = origin => new Request('https://store.vercel.app/api/checkout', { headers: origin ? { origin } : {} });
+  assert.equal(checkoutOrigin(request('https://store.example.com'), 'https://store.vercel.app', 'https://store.example.com'), 'https://store.example.com');
+  assert.equal(checkoutOrigin(request('https://store.vercel.app'), 'https://store.vercel.app'), 'https://store.vercel.app');
+  for (const origin of [undefined, 'https://evil.example', 'https://store.example.com.evil.example', 'null']) {
+    assert.equal(checkoutOrigin(request(origin), 'https://store.vercel.app', 'https://store.example.com'), null);
+  }
+  assert.equal(checkoutOrigin(request('https://store.vercel.app')), 'https://store.vercel.app');
+});
 const order = { name: 'Test Buyer', email: 'buyer@example.com', phone: '+233200000000', delivery: 'pickup', notes: '', items: [{ slug: 'iphone-17-pro', quantity: 2, selections: { storage: '256 GB', color: 'Silver' } }] };
 test('calculates pesewa totals from the catalog, ignoring client pricing', () => {
   const result = validateOrder({ ...order, amount: 1, items: [{ ...order.items[0], price: 1 }] });
