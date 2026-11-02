@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { colorImageIndex } from "../../lib/product-color-image";
+import { matchingColorImageIndex } from "../../lib/product-color-image";
 import type { Product } from "../../lib/products";
 import { useVariant } from "./variant-context";
 import styles from "./product-gallery.module.css";
@@ -12,13 +12,15 @@ export default function ProductGallery({ product }: { product: Product }) {
   const [manualView, setManualView] = useState({ color: "", index: 0 });
   const { selections } = useVariant();
   const color = selections.color ?? "";
-  const colorIndex = colorImageIndex(product, images, color);
+  const matchedIndex = matchingColorImageIndex(product, images, color);
+  const colorIndex = matchedIndex ?? 0;
   const selected = manualView.color === color ? manualView.index : colorIndex;
   return <div className={styles.gallery}>
     <div className="product-detail-visual">
-      <Image className="product-detail-image" src={images[selected]} alt={`${product.imageAlt}${color && selected === colorIndex ? ` — ${color}` : ""}${selected ? ` — view ${selected + 1}` : ""}`} fill sizes="(max-width: 760px) 90vw, 520px" loading="eager" />
+      <Image className="product-detail-image" src={images[selected]} alt={`${product.imageAlt}${matchedIndex !== null && selected === colorIndex ? ` — ${color}` : ""}${selected ? ` — view ${selected + 1}` : ""}`} fill sizes="(max-width: 760px) 90vw, 520px" loading="eager" />
       {product.tag && <span className="product-detail-tag">{product.tag}</span>}
     </div>
+    {color && matchedIndex === null && <p className={styles.photoNotice} role="status">A {color} photo hasn’t been added yet. Gallery photos show the available product views.</p>}
     {images.length > 1 && <div className={styles.thumbnails} role="group" aria-label="Product images">
       {images.map((src, index) => <button type="button" key={src} aria-label={`View image ${index + 1} of ${product.name}`} aria-pressed={selected === index} onClick={() => setManualView({ color, index })}>
         <Image src={src} alt="" fill sizes="72px" />
