@@ -92,6 +92,7 @@ class Order(models.Model):
     fulfillment_status = models.CharField(max_length=20, default='new', choices=[('new','New'),('processing','Processing'),('ready','Ready for pickup'),('shipped','Shipped'),('completed','Completed'),('cancelled','Cancelled')])
     created_at = models.DateTimeField(auto_now_add=True)
     paid_at = models.DateTimeField(null=True, blank=True)
+    confirmation_email_sent_at = models.DateTimeField(null=True, blank=True)
     class Meta: ordering = ['-created_at']
     def __str__(self): return self.reference
 

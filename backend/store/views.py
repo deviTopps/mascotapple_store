@@ -1,15 +1,68 @@
 import json
+import logging
 import secrets
 from decimal import Decimal
 from functools import wraps
 from django.conf import settings
 from django.db import DatabaseError, connection, transaction
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 from .models import Product, Order, OrderItem, configured_price
+
+logger = logging.getLogger(__name__)
+
+
+def send_order_confirmation(reference):
+    order = Order.objects.prefetch_related('items').get(reference=reference)
+    if order.confirmation_email_sent_at:
+        return
+
+    item_lines = []
+    for item in order.items.all():
+        options = ', '.join(f'{key.replace("_", " ").title()}: {value}' for key, value in item.selections.items())
+        description = f'{item.name} ({options})' if options else item.name
+        line_total = item.unit_price * item.quantity
+        item_lines.append(f'- {description} × {item.quantity}: {order.currency} {line_total:,.2f}')
+
+    delivery = 'Store pickup' if order.delivery == 'pickup' else 'Delivery'
+    if order.delivery == 'delivery':
+        delivery += f' to {order.address}, {order.city}'
+    payment = 'Pay on delivery / pickup' if order.payment_method == 'cod' else 'Paystack (test payment confirmed)'
+    status = 'Payment is due when you receive your order.' if order.payment_method == 'cod' else 'Your Paystack test payment has been confirmed.'
+    body_lines = [
+        f'Hello {order.name},',
+        '',
+        'Thank you for your order from Mascot Apple Dealz GH.',
+        f'Order reference: {order.reference}',
+        f'Contact phone: {order.phone}',
+        '',
+        'Items:',
+        *item_lines,
+        '',
+        f'Total: {order.currency} {order.amount:,.2f}',
+        f'Delivery: {delivery}',
+        f'Payment method: {payment}',
+        status,
+    ]
+    if order.notes:
+        body_lines.extend(['', f'Order notes: {order.notes}'])
+    body_lines.extend(['', f'Contact us at {settings.DEFAULT_FROM_EMAIL.split("<")[-1].rstrip("> ")} if you need help.'])
+    body = '\n'.join(body_lines)
+    sent = send_mail(
+        f'Order confirmation {order.reference} — Mascot Apple Dealz GH',
+        body,
+        settings.DEFAULT_FROM_EMAIL,
+        [order.email],
+        fail_silently=False,
+    )
+    if sent:
+        Order.objects.filter(pk=order.pk, confirmation_email_sent_at__isnull=True).update(confirmation_email_sent_at=timezone.now())
+    else:
+        logger.error('Order confirmation email was not accepted for order %s', order.reference)
 
 @require_GET
 def health(request):
@@ -73,6 +126,7 @@ def create_order(request):
         if data['delivery'] not in ['pickup', 'delivery']: raise ValueError('Invalid delivery')
         payment_method = data.get('paymentMethod', 'paystack')
         if payment_method not in ['cod', 'paystack']: raise ValueError('Invalid payment method')
+        confirmation_reference = None
         with transaction.atomic():
             order, created = Order.objects.get_or_create(reference=reference, defaults={k: data.get(k, '') for k in ['name','email','phone','delivery','address','city','notes']} | {'location': data.get('location'), 'amount': Decimal(amount) / 100, 'payment_method': payment_method})
             if not created:
@@ -80,11 +134,18 @@ def create_order(request):
                 matches = matches and all(getattr(order, k) == data.get(k, '') for k in ['name','email','phone','delivery','address','city','notes']) and order.location == data.get('location')
                 saved = [(line.product_id, line.quantity, line.selections) for line in order.items.order_by('id')]
                 matches = matches and saved == [(p.pk, q, s) for p, q, s, price in items]
-                if matches: return JsonResponse({'reference': order.reference, 'status': 'placed'})
-                return JsonResponse({'error': 'Reference already exists'}, status=409)
-            order.full_clean()
-            OrderItem.objects.bulk_create([OrderItem(order=order, product=p, name=p.name, quantity=q, selections=s, unit_price=price) for p,q,s,price in items])
-        return JsonResponse({'reference': order.reference}, status=201)
+                if not matches: return JsonResponse({'error': 'Reference already exists'}, status=409)
+            else:
+                order.full_clean()
+                OrderItem.objects.bulk_create([OrderItem(order=order, product=p, name=p.name, quantity=q, selections=s, unit_price=price) for p,q,s,price in items])
+            if order.payment_method == 'cod' and not order.confirmation_email_sent_at:
+                confirmation_reference = order.reference
+        if confirmation_reference:
+            try:
+                send_order_confirmation(confirmation_reference)
+            except Exception:
+                logger.exception('Could not send order confirmation for order %s', confirmation_reference)
+        return JsonResponse({'reference': order.reference, 'status': 'placed'}, status=201 if created else 200)
     except (KeyError, TypeError, ValueError, ValidationError, Product.DoesNotExist):
         return JsonResponse({'error': 'Invalid order. Check the details and refresh your cart.'}, status=400)
 
@@ -103,6 +164,12 @@ def mark_paid(request, reference):
                 order.payment_status = 'paid'
                 order.paid_at = timezone.now()
                 order.save(update_fields=['payment_status','paid_at'])
+            should_send_confirmation = not order.confirmation_email_sent_at
+        if should_send_confirmation:
+            try:
+                send_order_confirmation(reference)
+            except Exception:
+                logger.exception('Could not send order confirmation for order %s', reference)
         return JsonResponse({'reference': reference, 'status': 'paid'})
     except Order.DoesNotExist: return JsonResponse({'error': 'Order not found'}, status=404)
     except (ValueError, TypeError): return JsonResponse({'error': 'Invalid payment'}, status=400)

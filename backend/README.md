@@ -38,4 +38,4 @@ backend/.venv/bin/python backend/manage.py check
 backend/.venv/bin/python backend/manage.py test store
 ```
 
-Environment variables: `DJANGO_SECRET_KEY`, `DJANGO_API_TOKEN`, `DJANGO_DEBUG`, `DJANGO_ALLOWED_HOSTS` on Django; `DJANGO_API_URL`, `DJANGO_API_TOKEN` on Next.js. Local generated secrets live in `.local-config.json`, with permissions restricted to the current user.
+Environment variables: `DJANGO_SECRET_KEY`, `DJANGO_API_TOKEN`, `DJANGO_DEBUG`, `DJANGO_ALLOWED_HOSTS`, `EMAIL_HOST_USER`, and `EMAIL_HOST_PASSWORD` on Django; `DJANGO_API_URL`, `DJANGO_API_TOKEN` on Next.js. Order confirmations are sent from `mascotappledealzgh@gmail.com` through Gmail SMTP (`smtp.gmail.com:587`, TLS). Set `EMAIL_HOST_PASSWORD` to a Gmail App Password in the backend runtime's secret configuration; never commit it. Pay-on-delivery orders receive an itemized confirmation when placed, and Paystack orders receive one after payment verification. The sent timestamp prevents routine webhook retries from sending duplicate confirmations. Local generated secrets live in `.local-config.json`, with permissions restricted to the current user.
