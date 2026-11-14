@@ -47,7 +47,6 @@ export default function Home() {
   return (
     <main className={`storefront ${headerStyles.page}`}>
       <div className={headerStyles.fixedHeader}>
-      <div className={headerStyles.announcement}>Complimentary delivery on orders over GH₵75 <ArrowRight size={13} aria-hidden="true" /></div>
       <header className={headerStyles.header} onKeyDown={(event) => {
         if (event.key === "Escape") {
           if (searchOpen) { setSearchOpen(false); searchButton.current?.focus(); }
