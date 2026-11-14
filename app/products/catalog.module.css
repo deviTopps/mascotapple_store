@@ -13,7 +13,6 @@
 .intro p { max-width: 360px; font-size: 15px; line-height: 1.7; color: #d1e3eb; margin: 0 0 26px; }
 .heroCta { display: inline-flex; align-items: center; gap: 20px; padding: 14px 20px; border-radius: 100px; background: #fff; color: #063c56; font-size: 13px; font-weight: 600; }
 .heroCta:hover { background: #d6f2fc; }
-.collectionCount { display: block; margin-top: 20px; font-size: 11px; color: #b4d0dd; }
 .heroVisual { position: relative; min-width: 0; }
 .heroOrbit { position: absolute; width: 430px; height: 430px; border-radius: 50%; background: #17627c; top: 8%; left: 4%; box-shadow: 0 0 0 45px #ffffff04, 0 0 0 90px #ffffff03; }
 .heroImage { object-fit: contain; padding: 24px 24px 44px 0; z-index: 1; }

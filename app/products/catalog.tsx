@@ -55,7 +55,6 @@ export default function Catalog() {
   return (
     <main className={`${styles.page} ${header.page}`}>
       <div className={header.fixedHeader}>
-        <div className={header.announcement}>Complimentary delivery on orders over GH₵75 <ArrowRight size={13} /></div>
         <header className={header.header}>
           <div className={header.inner}>
             <Link className={header.brand} href="/" aria-label="Mascot home"><Image src="/main_logo.jpg" alt="Mascot Apple Dealz GH" width={120} height={120} loading="eager" /></Link>
@@ -69,16 +68,13 @@ export default function Catalog() {
         <nav className={styles.breadcrumb} aria-label="Breadcrumb"><Link href="/">Home</Link><ChevronRight size={13} /><span aria-current="page">Shop</span></nav>
         <section className={styles.intro} aria-labelledby="shop-heading">
           <div className={styles.heroCopy}>
-            <span className={styles.eyebrow}>THE MASCOT COLLECTION</span>
             <h1 id="shop-heading">Premium Tech<br /><span>Get Value for Money</span></h1>
             <p>From everyday essentials to your next big upgrade. Discover tech you’ll love, at prices that make sense.</p>
             <a className={styles.heroCta} href="#shop-results">Explore the collection <ArrowRight size={18} aria-hidden="true" /></a>
-            <span className={styles.collectionCount}>{products.length} products. Plenty of possibilities.</span>
           </div>
           <div className={styles.heroVisual}>
             <span className={styles.heroOrbit} aria-hidden="true" />
             <Image src="/hero-apple-devices-transparent.png" alt="A collection of Apple devices" fill sizes="(max-width: 760px) 90vw, 50vw" loading="eager" className={styles.heroImage} />
-            <span className={styles.heroCaption}>Made for work. Ready for play.</span>
           </div>
         </section>
         <nav className={styles.categoryNav} aria-label="Browse by category">
