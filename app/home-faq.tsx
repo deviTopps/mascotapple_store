@@ -9,7 +9,7 @@ const questions = [
   },
   {
     question: 'How can I pay?',
-    answer: <>You can choose to pay at pickup or on delivery, depending on your order. Online checkout currently runs in test mode and does not collect real money. Check the payment details shown at checkout before placing your order.</>,
+    answer: <>You can choose to pay at pickup or on delivery, depending on your order. Online payments are processed through Paystack. Review the payment mode and amount shown at checkout before continuing.</>,
   },
   {
     question: 'Do you offer delivery and store pickup?',

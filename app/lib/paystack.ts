@@ -1,4 +1,9 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
+export type PaystackMode = "test" | "live";
+export function paystackMode(secret: string | undefined): PaystackMode | null {
+  const match = secret?.match(/^sk_(test|live)_\S{10,}$/);
+  return match ? match[1] as PaystackMode : null;
+}
 export type PaymentSession = { reference: string; amount: number; expires: number };
 export function signSession(session: PaymentSession, secret: string) {
   const payload = Buffer.from(JSON.stringify(session)).toString("base64url");

@@ -21,7 +21,7 @@ The build deliberately fails if these settings are missing or malformed. A worki
 ## Optional environment variables
 
 - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`: enables delivery address search. Restrict the key to your storefront referrers and required Google APIs. Manual address entry works without it.
-- `PAYSTACK_SECRET_KEY`: accepts test keys only. Leave blank to use pay on delivery/pickup without online payments. Live Paystack payments are not implemented.
+- `PAYSTACK_SECRET_KEY`: set a Paystack test secret (`sk_test_…`) for test transactions or a live secret (`sk_live_…`) to collect real payments. Leave blank to use pay on delivery/pickup only. Never set this as a `NEXT_PUBLIC_` variable.
 - `CHECKOUT_ALLOWED_ORIGINS`: optional comma-separated exact storefront origins for additional domains, such as `https://www.mascotappledealzgh.com,https://mascotappledealzgh.com`. Only list domains serving this store. Checkout returns to the same approved origin used by the customer.
 
 Never use a `NEXT_PUBLIC_` prefix for the backend token or payment secret. Enter credentials in Vercel's environment settings; do not commit `.env.local`. `.env.example` lists the configuration names, and `.vercelignore` excludes local environment files and the backend from frontend uploads.
@@ -32,7 +32,7 @@ After adding a custom domain under **Settings → Domains**, apply the DNS recor
 
 For **Preview** deployments, configure a separate staging backend URL/token and leave `SITE_URL` unset. Checkout will use the preview request origin. Do not give untrusted preview deployments production backend credentials. If you have no staging backend, configure Production only; preview builds will fail clearly until their backend settings are provided.
 
-Environment changes affect new deployments; redeploy after changing them.
+For live payments, configure the webhook in Paystack's live integration to `https://YOUR-STOREFRONT/api/paystack/webhook`. Environment changes affect new deployments; redeploy after changing them. Verify product and variant prices in Django before accepting live orders.
 
 ## Verify after deployment
 

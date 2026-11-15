@@ -19,8 +19,9 @@ against compromise. Re-run the checks after changes and review new advisories.
 - Orders require same-origin JSON checkout requests, bounded streamed bodies,
   validated product options and server-calculated amounts. Backend order writes
   additionally require a constant-time-checked Bearer token.
-- Online payments remain test-only. Never mark payments paid from a browser
-  claim; verify the provider response, reference, amount, currency and session.
+- Paystack test/live mode is selected by the server-only secret key. Never mark
+  payments paid from a browser claim; verify the provider response, matching
+  environment, reference, amount, currency and session.
 - Admin uploads are decoded as images and checked for matching file extension,
   a 5 MB size limit and a 20-megapixel limit. Public media rejects traversal;
   the frontend media proxy rejects redirects and unsupported query parameters.

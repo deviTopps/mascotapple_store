@@ -94,7 +94,7 @@ class ItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['reference','name','order_total','payment_method','payment_status','delivery','fulfillment_status','created_at']
+    list_display = ['reference','name','order_total','payment_method','payment_environment','payment_status','delivery','fulfillment_status','created_at']
     list_editable = ['fulfillment_status']
     date_hierarchy = 'created_at'
     save_on_top = True
@@ -107,7 +107,7 @@ class OrderAdmin(admin.ModelAdmin):
         ('Order', {'fields': ('reference', 'created_at', 'fulfillment_status')}),
         ('Customer', {'fields': ('name', 'email', 'phone')}),
         ('Delivery', {'fields': ('delivery', 'address', 'city', 'location', 'notes')}),
-        ('Payment', {'fields': ('payment_method', 'payment_status', 'amount', 'currency', 'paid_at')}),
+        ('Payment', {'fields': ('payment_method', 'payment_environment', 'payment_status', 'amount', 'currency', 'paid_at')}),
     ]
 
     @admin.display(description='Total', ordering='amount')

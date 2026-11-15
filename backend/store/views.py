@@ -31,8 +31,8 @@ def send_order_confirmation(reference):
     delivery = 'Store pickup' if order.delivery == 'pickup' else 'Delivery'
     if order.delivery == 'delivery':
         delivery += f' to {order.address}, {order.city}'
-    payment = 'Pay on delivery / pickup' if order.payment_method == 'cod' else 'Paystack (test payment confirmed)'
-    status = 'Payment is due when you receive your order.' if order.payment_method == 'cod' else 'Your Paystack test payment has been confirmed.'
+    payment = 'Pay on delivery / pickup' if order.payment_method == 'cod' else 'Paystack online payment confirmed'
+    status = 'Payment is due when you receive your order.' if order.payment_method == 'cod' else ('Your Paystack test payment has been confirmed.' if order.payment_environment == 'test' else 'Your Paystack payment has been confirmed.')
     body_lines = [
         f'Hello {order.name},',
         '',
@@ -71,7 +71,7 @@ def health(request):
             cursor.execute('SELECT 1')
     except DatabaseError:
         return JsonResponse({'status': 'unavailable'}, status=503, headers={'Cache-Control': 'no-store'})
-    return JsonResponse({'status': 'ok'}, headers={'Cache-Control': 'no-store'})
+    return JsonResponse({'status': 'ok', 'payment_environments': ['test', 'live']}, headers={'Cache-Control': 'no-store'})
 
 @require_GET
 def catalog(request):
@@ -158,12 +158,14 @@ def mark_paid(request, reference):
         if not isinstance(data, dict): raise ValueError('Invalid request')
         with transaction.atomic():
             order = Order.objects.select_for_update().get(reference=reference)
-            if order.payment_method != 'paystack' or data.get('amount') != int(order.amount * 100) or data.get('currency') != order.currency or data.get('domain') != 'test':
+            domain = data.get('domain')
+            if order.payment_method != 'paystack' or data.get('amount') != int(order.amount * 100) or data.get('currency') != order.currency or domain not in ['test', 'live']:
                 return JsonResponse({'error': 'Payment mismatch'}, status=400)
             if order.payment_status != 'paid':
                 order.payment_status = 'paid'
                 order.paid_at = timezone.now()
-                order.save(update_fields=['payment_status','paid_at'])
+                order.payment_environment = domain
+                order.save(update_fields=['payment_status','paid_at','payment_environment'])
             should_send_confirmation = not order.confirmation_email_sent_at
         if should_send_confirmation:
             try:

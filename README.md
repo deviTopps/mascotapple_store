@@ -43,7 +43,7 @@ The suite covers desktop/mobile layouts, serious accessibility violations, cooki
 - Product metadata, JSON-LD, `/sitemap.xml` and `/robots.txt` support search indexing. Set `SITE_URL` to the public frontend origin. Cart, checkout and Vercel preview pages request no indexing.
 - Figtree is self-hosted through `next/font/local`; its license is in `app/fonts/OFL.txt`.
 - Cart and cookie settings use browser storage with an in-memory fallback if writes fail. That fallback lasts only for the current visit.
-- Checkout validates orders server-side and limits payment metadata to purchased items. Paystack remains test-only; live payments, payment webhooks, inventory tracking and shipping integrations require further implementation.
+- Checkout validates orders server-side and limits payment metadata to purchased items. Paystack test/live transactions are verified server-side and the environment is recorded on the order. Confirm product prices, delivery terms and fulfillment capacity before enabling live charges; inventory tracking and shipping integrations are not implemented.
 
 ## Deployment and operations
 

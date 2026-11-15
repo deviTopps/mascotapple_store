@@ -101,7 +101,10 @@ class StoreTests(TestCase):
         self.assertEqual(self.post('/api/orders/',self.order).status_code,409)
         paid = '/api/orders/mascot-test-order/paid/'
         self.assertEqual(self.post(paid,{'amount':1,'currency':'GHS','domain':'test'}).status_code,400)
-        self.assertEqual(self.post(paid,{'amount':9900,'currency':'GHS','domain':'live'}).status_code,400)
+        self.assertEqual(self.post(paid,{'amount':9900,'currency':'GHS','domain':'invalid'}).status_code,400)
+        self.assertEqual(self.post(paid,{'amount':9900,'currency':'GHS','domain':'live'}).status_code,200)
+        order.refresh_from_db()
+        self.assertEqual(order.payment_environment, 'live')
         for _ in range(2): self.assertEqual(self.post(paid,{'amount':9900,'currency':'GHS','domain':'test'}).status_code,200)
         order.refresh_from_db()
         self.assertEqual(order.payment_status,'paid')

@@ -19,3 +19,18 @@ export async function recordBackendOrder(path: string, body: unknown) {
   });
   if (!response.ok) throw new Error("The order could not be saved. Please refresh your cart and try again.");
 }
+
+export async function backendSupportsLivePayments(): Promise<boolean> {
+  if (!process.env.DJANGO_API_URL) return false;
+  try {
+    const response = await fetch(`${process.env.DJANGO_API_URL}/api/health/`, {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!response.ok) return false;
+    const data = await response.json();
+    return data?.status === 'ok' && Array.isArray(data.payment_environments) && data.payment_environments.includes('live');
+  } catch {
+    return false;
+  }
+}

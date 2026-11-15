@@ -1,8 +1,8 @@
-import { getStoreProducts, recordBackendOrder } from "../../lib/store-backend";
+import { backendSupportsLivePayments, getStoreProducts, recordBackendOrder } from "../../lib/store-backend";
 import { randomUUID } from "node:crypto";
 import { cookies } from "next/headers";
 import { validateOrder } from "../../lib/checkout";
-import { paystack, signSession } from "../../lib/paystack";
+import { paystack, paystackMode, signSession } from "../../lib/paystack";
 import { readOrderBody, RequestBodyError } from "../../lib/request-body";
 import { checkoutOrigin } from "../../lib/checkout-origin";
 export const runtime = "nodejs";
@@ -11,6 +11,7 @@ export async function POST(request: Request) {
   const origin = checkoutOrigin(request, process.env.SITE_URL, process.env.CHECKOUT_ALLOWED_ORIGINS);
   if (!origin) return Response.json({ error: "Invalid checkout origin." }, { status: 403 });
   const secret = process.env.PAYSTACK_SECRET_KEY;
+  const paymentMode = paystackMode(secret);
 
   let order;
   let requestId: string | undefined;
@@ -44,7 +45,10 @@ export async function POST(request: Request) {
       return Response.json({ error: "We couldn’t confirm your order. Retry with this page open; your order will not be duplicated." }, { status: 502 });
     }
   }
-  if (!secret?.startsWith("sk_test_")) return Response.json({ error: "Online payment is not available yet. Choose pay on delivery instead." }, { status: 503 });
+  if (!secret || !paymentMode) return Response.json({ error: "Online payment is not available yet. Choose pay on delivery instead." }, { status: 503 });
+  if (paymentMode === "live" && !(await backendSupportsLivePayments())) {
+    return Response.json({ error: "Live payment setup is still deploying. Please choose pay on delivery or try again later." }, { status: 503 });
+  }
   try {
     const reference = `mascot-${randomUUID()}`;
     const session = { reference, amount: order.amount, expires: Date.now() + 86400000 };

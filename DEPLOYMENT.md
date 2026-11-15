@@ -67,7 +67,7 @@ In Vercel's **Production** environment, add:
 - `DJANGO_API_TOKEN`: exactly the production backend token.
 - `SITE_URL=https://example.com`: the exact origin customers will use for checkout, without trailing slash. If starting with a Vercel domain, use that domain first and update/redeploy when attaching your custom domain.
 - Optional `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`: restrict it to your storefront referrers and required Google APIs. This key is browser-visible.
-- Optional `PAYSTACK_SECRET_KEY`: **test keys only**. Leave unset for pay-on-delivery/pickup checkout without online payments.
+- Optional `PAYSTACK_SECRET_KEY`: use a test secret (`sk_test_…`) for test transactions or a live secret (`sk_live_…`) to collect real payments. Leave unset for pay-on-delivery/pickup checkout without online payments. Configure the matching webhook in the corresponding Paystack integration as `https://YOUR-STOREFRONT/api/paystack/webhook`.
 
 The build rejects missing backend settings and invalid HTTPS origins. Only the Maps key is public; never prefix the backend token or Paystack secret with `NEXT_PUBLIC_`. Vercel environment changes require a new deployment. See [Vercel environment variables](https://vercel.com/docs/environment-variables).
 
@@ -100,7 +100,7 @@ Check catalog counts, prices, options and image URLs. Remove the temporary trans
 
 Confirm HTTPS, admin login, product images, variant selections, cart and a complete pay-on-delivery/pickup order. Verify the order appears once in Django admin, including after retrying the same checkout request. Confirm the backend rejects an unauthenticated POST to `/api/orders/` with HTTP 401.
 
-Paystack is still **test-only**. Live payment collection, webhook reconciliation, stock tracking and variant-specific prices are separate work; hosting does not enable those features. Review the current catalog and delivery policy before taking real orders.
+For live payments, first deploy the Django changes and apply database migrations (`python manage.py migrate` in the backend service), then deploy the frontend with the live Paystack secret and configure the webhook in Paystack's live dashboard at `https://YOUR-STOREFRONT/api/paystack/webhook`. Confirm product/variant prices, delivery terms and fulfillment capacity before accepting charges. Live checkout collects real money.
 
 ## 5. Backups and updates
 

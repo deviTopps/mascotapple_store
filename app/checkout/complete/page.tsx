@@ -6,13 +6,14 @@ import type { CartItem } from "../../cart-store";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import CommerceShell from "../../commerce-shell";
-import { paystack, readSession } from "../../lib/paystack";
+import { paystack, paystackMode, readSession } from "../../lib/paystack";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export default async function PaymentComplete({ searchParams }: { searchParams: Promise<{ reference?: string }> }) {
   const { reference } = await searchParams;
   const secret = process.env.PAYSTACK_SECRET_KEY;
+  const paymentMode = paystackMode(secret);
   const validReference = typeof reference === 'string' && /^mascot-[\w-]{1,93}$/.test(reference) ? reference : undefined;
   const jar = await cookies();
   const token = (validReference ? jar.get(`mascot-payment-${validReference}`)?.value : undefined) ?? jar.get("mascot-payment")?.value;
@@ -22,12 +23,11 @@ export default async function PaymentComplete({ searchParams }: { searchParams: 
   let purchased: CartItem[] = [];
   let message = "We couldn’t verify this payment session. If you were charged, keep your Paystack receipt and contact us before trying again.";
   const ownsSession = !!session && session.reference === validReference;
-  if (secret?.startsWith("sk_test_") && validReference) {
+  if (secret && paymentMode && validReference) {
     try {
       const transaction = await paystack(`/transaction/verify/${encodeURIComponent(validReference)}`, secret);
-      paid = transaction.status === "success" && transaction.reference === validReference && transaction.currency === "GHS" && Number.isSafeInteger(transaction.amount) && transaction.amount > 0 && (!ownsSession || transaction.amount === session!.amount) && transaction.metadata?.source === "mascot-store";
-      test = transaction.domain === "test";
-      paid = paid && test;
+      paid = transaction.status === "success" && transaction.reference === validReference && transaction.domain === paymentMode && transaction.currency === "GHS" && Number.isSafeInteger(transaction.amount) && transaction.amount > 0 && (!ownsSession || transaction.amount === session!.amount) && transaction.metadata?.source === "mascot-store";
+      test = paymentMode === "test";
       if (paid) await recordBackendOrder(`/api/orders/${encodeURIComponent(validReference)}/paid/`, { amount: transaction.amount, currency: transaction.currency, domain: transaction.domain });
       if (paid && ownsSession && Array.isArray(transaction.metadata?.order?.items)) purchased = transaction.metadata.order.items.map((item: CartItem) => ({ slug: item.slug, quantity: item.quantity, selections: item.selections }));
       if (!paid) message = "Your payment has not been confirmed. You can check again here, or return to checkout if payment was cancelled.";

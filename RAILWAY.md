@@ -41,6 +41,6 @@ Populate the catalog by importing your current catalog and uploaded images, or r
 
 Verify `/api/health/`, `/api/catalog/`, `/admin/`, admin styling and a uploaded image. Add the resulting HTTPS domain as Vercel's `DJANGO_API_URL`, and use the same `DJANGO_API_TOKEN` on both services. Redeploy Vercel after adding its variables.
 
-Enable scheduled backups for both the Postgres volume and backend media volume in Railway. Volume-backed deployments can have a short interruption during redeploys. Paystack remains test-only; pay-on-delivery/pickup is supported.
+Enable scheduled backups for both the Postgres volume and backend media volume in Railway. Volume-backed deployments can have a short interruption during redeploys. Apply backend schema changes with `python manage.py migrate` in the service shell before deploying frontend code that relies on them. Pay-on-delivery/pickup is also supported.
 
 References: [Django](https://docs.railway.com/guides/django), [volumes](https://docs.railway.com/volumes), [healthchecks](https://docs.railway.com/deployments/healthchecks).
