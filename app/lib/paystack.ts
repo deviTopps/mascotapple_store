@@ -22,11 +22,33 @@ export function readSession(token: string, secret: string): PaymentSession | nul
   } catch { return null; }
 }
 export async function paystack(path: string, secret: string, body?: unknown) {
-  const response = await fetch(`https://api.paystack.co${path}`, {
-    method: body ? "POST" : "GET", headers: { Authorization: `Bearer ${secret}`, "Content-Type": "application/json" },
-    ...(body ? { body: JSON.stringify(body) } : {}), cache: "no-store", signal: AbortSignal.timeout(15000),
-  });
-  const data = await response.json();
-  if (!response.ok || !data.status) throw new Error("Paystack is unavailable. Please try again shortly.");
+  let response: Response;
+  try {
+    response = await fetch(`https://api.paystack.co${path}`, {
+      method: body ? "POST" : "GET", headers: { Authorization: `Bearer ${secret}`, "Content-Type": "application/json" },
+      ...(body ? { body: JSON.stringify(body) } : {}), cache: "no-store", signal: AbortSignal.timeout(15000),
+    });
+  } catch (error) {
+    console.error("Paystack request failed", {
+      path: path.split("?")[0],
+      error: error instanceof Error ? error.name : "UnknownError",
+    });
+    throw new Error("Paystack is unavailable. Please try again shortly.");
+  }
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    console.error("Paystack returned an unreadable response", { path: path.split("?")[0], status: response.status });
+    throw new Error("Paystack is unavailable. Please try again shortly.");
+  }
+  if (!response.ok || !data.status) {
+    console.error("Paystack rejected a request", {
+      path: path.split("?")[0],
+      status: response.status,
+      message: typeof data.message === "string" ? data.message : "Unknown Paystack error",
+    });
+    throw new Error("Paystack is unavailable. Please try again shortly.");
+  }
   return data.data;
 }
