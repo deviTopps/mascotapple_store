@@ -11,13 +11,15 @@ SITE_URL=http://localhost:3000
 
 Use the actual browser origin for `SITE_URL`, without a trailing slash. Restart the development server after changing environment variables. Never commit `.env.local` or put secret keys in `NEXT_PUBLIC_` variables.
 
+For the live site, configure `PAYSTACK_SECRET_KEY` in the hosting provider's Production environment and redeploy after changing it. A local `.env.local` edit does not change production credentials.
+
 ## Flow
 
 - “Buy Now” opens the product options. Customers must select a configuration before adding it to the cart.
 - The product details page also has “Add to cart”. Quantities and cart contents persist across refreshes.
 - Checkout collects contact and delivery details. Pickup is free; delivery is available free for orders over GH₵75, matching the existing site policy.
 - Products without a numeric price must be removed or priced before checkout. No zero-price substitutions are made.
-- The server validates items and quantities, computes GHS amounts from the catalog in pesewas, and creates a Paystack transaction. Order details are attached as Paystack transaction metadata.
+- The server validates items and quantities, computes GHS amounts from the catalog in pesewas, and creates a Paystack transaction. Order details are attached as Paystack transaction metadata. Only after Paystack accepts initialization does the server save the pending order and return the hosted checkout URL; rejected credentials do not leave an unpaid store order.
 - Paystack returns to `/checkout/complete`. The server verifies payment status, reference, currency, amount, store metadata and the signed browser payment session before showing success. Only verified purchased quantities are removed from the cart.
 - Cancelled or failed payments leave the cart intact. A failed verification can be retried without initiating another charge.
 
@@ -29,7 +31,7 @@ With a configured Paystack test key, use Paystack's test payment instructions to
 
 ## Current scope
 
-Payment records are in Paystack; pending orders and verified payments are also recorded in the Django database when `DJANGO_API_URL` is configured. The payment environment is stored on the order after verification. Manage fulfillment status at the Django admin. Automated fulfillment and merchant notifications are not implemented. Each checkout has its own signed browser cookie (24-hour expiry), so multiple checkout attempts do not overwrite each other. The return page also reconciles successful payments by verifying the reference with Paystack and matching the stored Django order. Without the matching browser cookie, it shows only generic payment status and does not reveal the amount or clear the cart. Confirm product and variant prices in Django before enabling live payments.
+Transactions are created and maintained by Paystack. The Django database stores the order only after successful transaction initialization, then records verified payments and the test/live environment. Manage fulfillment status at the Django admin. Automated fulfillment and merchant notifications are not implemented. Each checkout has its own signed browser cookie (24-hour expiry), so multiple checkout attempts do not overwrite each other. The return page reconciles successful payments by verifying the reference with Paystack and matching the stored Django order. Without the matching browser cookie, it shows only generic payment status and does not reveal the amount or clear the cart. Confirm product and variant prices in Django before enabling live payments.
 
 Official API reference: https://paystack.com/docs/api/transaction/
 Test payment guide: https://paystack.com/docs/payments/test-payments/

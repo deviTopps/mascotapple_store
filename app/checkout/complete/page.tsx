@@ -6,7 +6,7 @@ import type { CartItem } from "../../cart-store";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import CommerceShell from "../../commerce-shell";
-import { paystack, paystackMode, readSession } from "../../lib/paystack";
+import { paystack, paystackMode, readSession, validPaystackTransaction } from "../../lib/paystack";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
@@ -16,7 +16,7 @@ export default async function PaymentComplete({ searchParams }: { searchParams: 
   const paymentMode = paystackMode(secret);
   const validReference = typeof reference === 'string' && /^mascot-[\w-]{1,93}$/.test(reference) ? reference : undefined;
   const jar = await cookies();
-  const token = (validReference ? jar.get(`mascot-payment-${validReference}`)?.value : undefined) ?? jar.get("mascot-payment")?.value;
+  const token = validReference ? jar.get(`mascot-payment-${validReference}`)?.value : undefined;
   const session = secret && token ? readSession(token, secret) : null;
   let paid = false;
   let test = false;
@@ -26,7 +26,7 @@ export default async function PaymentComplete({ searchParams }: { searchParams: 
   if (secret && paymentMode && validReference) {
     try {
       const transaction = await paystack(`/transaction/verify/${encodeURIComponent(validReference)}`, secret);
-      paid = transaction.status === "success" && transaction.reference === validReference && transaction.domain === paymentMode && transaction.currency === "GHS" && Number.isSafeInteger(transaction.amount) && transaction.amount > 0 && (!ownsSession || transaction.amount === session!.amount) && transaction.metadata?.source === "mascot-store";
+      paid = validPaystackTransaction(transaction, validReference, paymentMode) && (!ownsSession || transaction.amount === session!.amount);
       test = paymentMode === "test";
       if (paid) await recordBackendOrder(`/api/orders/${encodeURIComponent(validReference)}/paid/`, { amount: transaction.amount, currency: transaction.currency, domain: transaction.domain });
       if (paid && ownsSession && Array.isArray(transaction.metadata?.order?.items)) purchased = transaction.metadata.order.items.map((item: CartItem) => ({ slug: item.slug, quantity: item.quantity, selections: item.selections }));

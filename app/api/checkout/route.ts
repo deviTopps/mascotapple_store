@@ -2,7 +2,7 @@ import { backendSupportsLivePayments, getStoreProducts, recordBackendOrder } fro
 import { randomUUID } from "node:crypto";
 import { cookies } from "next/headers";
 import { validateOrder } from "../../lib/checkout";
-import { paystack, paystackMode, signSession } from "../../lib/paystack";
+import { initializePaystackCheckout, paystackMode, PaystackApiError, signSession } from "../../lib/paystack";
 import { readOrderBody, RequestBodyError } from "../../lib/request-body";
 import { checkoutOrigin } from "../../lib/checkout-origin";
 export const runtime = "nodejs";
@@ -52,19 +52,27 @@ export async function POST(request: Request) {
   try {
     const reference = `mascot-${randomUUID()}`;
     const session = { reference, amount: order.amount, expires: Date.now() + 86400000 };
-    await recordBackendOrder("/api/orders/", { ...order, reference });
-    const result = await paystack("/transaction/initialize", secret, {
+    const authorizationUrl = await initializePaystackCheckout(secret, {
       email: order.email, amount: order.amount, currency: "GHS", reference,
       callback_url: `${origin}/checkout/complete`,
       // Payment reconciliation needs purchased items, not addresses or notes.
       metadata: { source: "mascot-store", order: { items: order.items } },
     });
-    const url = new URL(result.authorization_url);
-    if (url.protocol !== "https:" || url.hostname !== "checkout.paystack.com") throw new Error("Unexpected payment URL.");
+    // Persist only after Paystack accepts initialization. Invalid credentials or
+    // malformed responses must not leave unpaid orders in the store database.
+    await recordBackendOrder("/api/orders/", { ...order, paymentMethod: "paystack", reference });
     (await cookies()).set(`mascot-payment-${reference}`, signSession(session, secret), { httpOnly: true, secure: origin.startsWith("https:"), sameSite: "lax", maxAge: 86400, path: "/" });
-    return Response.json({ url: url.href }, { headers: { "Cache-Control": "no-store" } });
+    return Response.json({ url: authorizationUrl }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
-    console.error("Checkout initialization failed", error instanceof Error ? error.message : "Unknown error");
+    if (error instanceof PaystackApiError && error.status === 401) {
+      return Response.json({
+        error: "Online payment is temporarily unavailable. Choose pay at pickup or delivery, or contact the store.",
+        code: "PAYMENT_CONFIGURATION",
+      }, { status: 502 });
+    }
+    if (!(error instanceof PaystackApiError)) {
+      console.error("Checkout initialization failed", error instanceof Error ? error.message : "Unknown error");
+    }
     return Response.json({ error: "Unable to open Paystack. Please try again shortly." }, { status: 502 });
   }
 }
